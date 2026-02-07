@@ -8,7 +8,7 @@ namespace LocaCraftAPI
     {
         public static void Main(string[] args)
         {
-            const string corsName = "MyCors";
+            const string corsName = "LocalDebugCors";
             const string databaseName = "RealEstateDb";
 
             var builder = WebApplication.CreateBuilder(args);
@@ -46,6 +46,8 @@ namespace LocaCraftAPI
                     config.RoutePrefix = string.Empty;
                 });
             }
+
+            app.UseCors(corsName);
 
             app.MapControllers();
 
