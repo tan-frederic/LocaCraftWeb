@@ -8,11 +8,24 @@ namespace LocaCraftAPI
     {
         public static void Main(string[] args)
         {
+            const string corsName = "MyCors";
+            const string databaseName = "RealEstateDb";
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<AppDbContext>( options =>
             {
-                options.UseInMemoryDatabase("RealEstateDb");
+                options.UseInMemoryDatabase(databaseName);
+            });
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(corsName, builder =>
+                {
+                    builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
             });
 
             builder.Services.AddScoped<IRealEstateAssetRepository, RealEstateAssetRepository>();
@@ -34,7 +47,7 @@ namespace LocaCraftAPI
                 });
             }
 
-            app.MapGet("/", () => "Hello World!");
+            app.MapControllers();
 
             app.Run();
         }
