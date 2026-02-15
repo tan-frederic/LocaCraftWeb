@@ -1,1 +1,88 @@
-<p>real-estate-list works!</p>
+<div class="container-fluid">    
+    <!-- Floating button to add real estate asset -->
+    <div class="d-flex justify-content-between align-items-center my-5">
+        <h2>List Real Estate</h2>
+        <button class="btn btn-success btn-lg" (click)="createRealEstateAsset()">
+            <span class="fs-3 me-2">+</span>
+            Nouveau bien
+        </button>
+    </div>
+
+    <div class="pb-5">
+        @if (realEstateAssets.length === 0) {
+            <p class="text-muted">Aucun bien immobilier disponible.</p>
+        } @else {
+            <div class="row g-4">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let asset of realEstateAssets">
+                    <div class="card h-100">
+                      <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{asset.name}}</h5>
+                        <h6 class="card-subtitle mb-2 text-body-secondary">{{asset.address}}</h6>
+                        @if (asset.addressComplement) {
+                            <h6 class="card-subtitle mb-2 text-body-secondary">{{asset.addressComplement}}</h6>
+                        }
+                        @if (asset.description) {
+                        <p class="card-text">{{asset.description}}</p>
+                        }
+                        <div class="mt-auto d-flex justify-content-between"> 
+                            <button class="btn btn-primary btn-sm mx-2" (click)="editRealEstateAsset(asset.id)">Edit</button>
+                            <button class="btn btn-danger btn-sm" (click)="openDeleteModal(deleteModal, asset)">Delete</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <!-- Modal confirm -->
+    <ng-template #deleteModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Confirmation de suppression</h5>
+        <button type="button" class="btn-close" 
+                (click)="cancelDelete()" 
+                aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir supprimer cette propriété ?</p>
+        @if (assetToDelete) {
+        <p class="text-muted"><strong>{{assetToDelete.name}}</strong></p>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" 
+                (click)="cancelDelete()">
+        Annuler
+        </button>
+        <button type="button" class="btn btn-danger" 
+                (click)="confirmDelete()">
+        Confirmer
+        </button>
+    </div>
+    </ng-template>
+</div>
+
+<!-- Backdrop for drawer -->
+@if (showDrawer) {
+    <div class="drawer-backdrop" (click)="closeDrawer()"></div>
+}
+
+<!-- Lateral Drawer form -->
+<div class="drawer" [class.drawer-open]="showDrawer">
+    <div class="drawer-header">
+        <h4 class="mb-0">{{ assetToEdit ? 'Modifier' : 'Nouveau' }} bien immobilier</h4>
+        <button type="button" class="btn-close" (click)="closeDrawer()" aria-label="Close"></button>
+    </div>
+    
+    <div class="drawer-body">
+        <!-- Form component integration -->
+        <app-real-estate-form
+            [assetToEdit]="assetToEdit"
+            [isInDrawer]="true"
+            (formSubmitted)="onFormSubmitted($event)"
+            (formError)="onFormError($event)"
+            (formCancelled)="onFormCancelled()">
+        </app-real-estate-form>
+    </div>
+</div>

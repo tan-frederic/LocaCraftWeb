@@ -9,5 +9,5 @@ export interface RealEstateAsset {
     postalCode: string;
     city: string;
     country: string;
-    leases: Lease[];
+    leases: Lease[]
 }
