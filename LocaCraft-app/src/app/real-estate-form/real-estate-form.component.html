@@ -1,8 +1,8 @@
-@if (isInDrawer) {
+@if (isInDrawer == false) {
     <h2 class="text-center my-5">New Real Estate</h2>
 }
 
-<form (ngSubmit)="onSubmit()" #realEstateAssetForm="ngForm" class="border rounded p-5 w-50 mb-5 mx-auto">
+<form (ngSubmit)="onSubmit()" #realEstateAssetForm="ngForm" class="border p-4 rounded mx-auto">
     <div class="mb-3">
         <label class="form-label">Real Estate Name*</label>
         <input required #nameRealEstateAsset="ngModel" type="text" class="form-control" name="nameRealEstateAsset" [(ngModel)]="realEstate.name"/>
