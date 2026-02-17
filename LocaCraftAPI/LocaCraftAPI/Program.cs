@@ -15,7 +15,7 @@ namespace LocaCraftAPI
 
             builder.Services.AddDbContext<AppDbContext>( options =>
             {
-                options.UseInMemoryDatabase(databaseName);
+                options.UseSqlite(databaseName);
             });
 
             builder.Services.AddCors(options =>
@@ -36,6 +36,12 @@ namespace LocaCraftAPI
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.Database.Migrate();
+            }
 
             if (app.Environment.IsDevelopment())
             {
