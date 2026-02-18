@@ -6,7 +6,9 @@ namespace LocaCraftAPI.Repositories
 {
     public class RealEstateAssetRepository : IRealEstateAssetRepository
     {
+        #region Attributes
         private readonly AppDbContext _context;
+        #endregion
 
         public RealEstateAssetRepository(AppDbContext context)
         {
