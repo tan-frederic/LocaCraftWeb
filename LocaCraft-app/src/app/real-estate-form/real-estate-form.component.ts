@@ -1,12 +1,100 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RealEstateAsset } from '../models/real-estate-assets';
+import { RealEstateService } from '../Services/real-estate.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Lease } from '../models/lease';
 
 @Component({
   selector: 'app-real-estate-form',
   standalone: true,
-  imports: [],
+  imports: [FormsModule, CommonModule],
   templateUrl: './real-estate-form.component.html',
   styleUrl: './real-estate-form.component.css'
 })
-export class RealEstateFormComponent {
 
+export class RealEstateFormComponent implements OnInit{
+
+  @Input() assetToEdit: RealEstateAsset | null = null;
+
+  @Input() isInDrawer: boolean = false;
+
+  @Output() formSubmitted = new EventEmitter<RealEstateAsset>();
+
+  @Output() formError = new EventEmitter<string>();
+
+  @Output() formCancelled = new EventEmitter<void>();
+
+  realEstate: RealEstateAsset = this.getEmptyRealEstate();
+
+  isEditing: boolean = false;
+
+  errorMessage: string = "";
+  isSubmitting: boolean = false;
+
+  constructor(private realEstateAssetService: RealEstateService,
+              private router: Router,
+              private activatedRoute: ActivatedRoute){}
+
+  ngOnInit(): void {
+    this.activatedRoute.paramMap.subscribe((result) => {
+      const id = result.get("id");
+      if (id) {
+        this.isEditing = true;
+        
+        this.realEstateAssetService.getRealEstateAssetById(Number(id)).subscribe({
+          next: (result) => {
+              this.realEstate = result;
+            },
+          error: (err) => {
+            console.error("Error loading Real Estate Asset", err)
+            this.errorMessage = `Error occured (${err.status})`
+          }          
+        });
+      }
+    })
+  }
+
+  onSubmit(): void {
+    if (this.isSubmitting) return;
+    
+    this.isSubmitting = true;
+    this.errorMessage = "";
+
+    if (this.isEditing){
+
+    } else {
+      this.realEstateAssetService.createRealEstateAsset(this.realEstate).subscribe({
+        next: (result) => {
+          this.isSubmitting = false;
+          this.formSubmitted.emit(result);
+        },
+        error: (err) => {
+          console.error("Error creating Real Estate Asset", err);
+          this.errorMessage = `Error occured (${err.status})`
+          this.isSubmitting = false;
+          this.formError.emit(this.errorMessage);
+        }
+      })
+    }
+  }
+
+  onCancel(): void {
+    this.formCancelled.emit();
+  }
+
+  private getEmptyRealEstate(): RealEstateAsset {
+    return {
+      id: 0,
+      name: "",
+      description: "",
+      address: "",
+      addressComplement: "",
+      postalCode: "",
+      city: "",
+      country: "",
+      leases: [],
+    };
+  }
 }
