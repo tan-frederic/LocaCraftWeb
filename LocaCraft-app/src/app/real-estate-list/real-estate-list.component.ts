@@ -52,7 +52,7 @@ export class RealEstateListComponent implements OnInit {
   }
 
   editRealEstateAsset(id: number): void {
-
+    this.router.navigate([`details`, id]);
   }
 
   openDeleteModal(content: any, asset: RealEstateAsset) {

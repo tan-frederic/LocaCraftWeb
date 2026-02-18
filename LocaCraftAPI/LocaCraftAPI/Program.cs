@@ -9,7 +9,7 @@ namespace LocaCraftAPI
         public static void Main(string[] args)
         {
             const string corsName = "LocalDebugCors";
-            const string databaseName = "RealEstateDb";
+            const string databaseName = "Data Source=app.db";
 
             var builder = WebApplication.CreateBuilder(args);
 
