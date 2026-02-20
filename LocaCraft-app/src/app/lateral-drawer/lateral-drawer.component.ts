@@ -23,6 +23,9 @@ export class LateralDrawerComponent implements OnChanges, AfterViewInit {
   @Input() componentData: any = null;
 
   @Output() drawerClosed = new EventEmitter<void>();
+  @Output() formSubmitted = new EventEmitter<any>();
+  @Output() formError = new EventEmitter<string>();
+  @Output() formCancelled = new EventEmitter<void>();
 
   showDrawer = false;
 
@@ -54,6 +57,23 @@ export class LateralDrawerComponent implements OnChanges, AfterViewInit {
     if (this.componentToDisplay) {
       this.componentRef = this.container.createComponent(this.componentToDisplay);
       this.updateComponentData();
+
+      // Subscribe to component outputs
+      if (this.componentRef.instance.formSubmitted) {
+        this.componentRef.instance.formSubmitted.subscribe((data: any) => {
+          this.formSubmitted.emit(data);
+        });
+      }
+      if (this.componentRef.instance.formError) {
+        this.componentRef.instance.formError.subscribe((error: string) => {
+          this.formError.emit(error);
+        });
+      }
+      if (this.componentRef.instance.formCancelled) {
+        this.componentRef.instance.formCancelled.subscribe(() => {
+          this.formCancelled.emit();
+        });
+      }
     }
   }
 

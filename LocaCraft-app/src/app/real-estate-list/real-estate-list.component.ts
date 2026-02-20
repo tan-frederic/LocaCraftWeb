@@ -109,7 +109,7 @@ export class RealEstateListComponent implements OnInit {
       this.showSuccess(`"${asset.name}" a été créé avec succès`);
     }
     
-    this.closeDrawer();
+    this.drawer.closeDrawer();
   }
 
   onFormError(errorMsg: string): void {
@@ -118,7 +118,7 @@ export class RealEstateListComponent implements OnInit {
   }
 
   onFormCancelled(): void {
-    this.closeDrawer();
+    this.drawer.closeDrawer();
   }
 
   // Drawer

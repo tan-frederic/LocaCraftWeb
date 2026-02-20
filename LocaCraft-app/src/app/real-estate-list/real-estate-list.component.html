@@ -67,6 +67,9 @@
     [drawerTitle]="assetToEdit ? 'Modifier bien immobilier' : 'Nouveau bien immobilier'"
     [componentToDisplay]="componentToDisplay"
     [componentData]="componentData"
-    (drawerClosed)="closeDrawer()">
+    (drawerClosed)="closeDrawer()"
+    (formSubmitted)="onFormSubmitted($event)"
+    (formError)="onFormError($event)"
+    (formCancelled)="onFormCancelled()">
 
 </app-lateral-drawer>
