@@ -1,1 +1,15 @@
-<p>lease-list works!</p>
+<div class="container-fluid border p-3 rounded mx-auto">
+    <!-- Floating button to add real estate asset -->
+    <div class="d-flex justify-content-between align-items-center my-5">
+        <h2>Liste des baux</h2>
+        <button class="btn btn-success btn-lg" (click)="createNewLease()">
+            <span class="fs-3 me-2">+</span>
+            Nouveau bail
+        </button>
+    </div>
+    <div class="pb-5">
+        @if (leases.length === 0) {
+            <p class="text-muted">Aucun bail disponible.</p>
+        }
+    </div>
+</div>

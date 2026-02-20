@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Lease } from '../models/lease';
 
 @Component({
   selector: 'app-lease-list',
@@ -8,5 +9,9 @@ import { Component } from '@angular/core';
   styleUrl: './lease-list.component.css'
 })
 export class LeaseListComponent {
-
+  leases: Lease[] = []; // This will hold the list of leases
+  
+  createNewLease() {
+    // Logic to create a new lease
+  }
 }

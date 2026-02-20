@@ -1,0 +1,11 @@
+<!-- Lateral Drawer form -->
+<div class="drawer" [class.drawer-open]="showDrawer">
+    <div class="drawer-header">
+        <h4 class="mb-0">{{ drawerTitle }}</h4>
+        <button type="button" class="btn-close" (click)="closeDrawer()" aria-label="Close"></button>
+    </div>
+
+    <div class="drawer-body">
+        <ng-container #container></ng-container>
+    </div>
+</div>
