@@ -3,15 +3,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LocaCraftAPI.Controllers
 {
+    /// <summary>
+    /// CRUD endpoints for tenant resources.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class TenantController : ControllerBase
     {
         #region Attributes
+        // Repository abstraction for tenant persistence.
         public readonly ITenantRepository _tenantRepository;
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Initializes a new controller instance.
+        /// </summary>
         public TenantController(ITenantRepository tenantRepository)
         {
             _tenantRepository = tenantRepository;
@@ -20,6 +27,9 @@ namespace LocaCraftAPI.Controllers
 
         #region CRUD Operations
 
+        /// <summary>
+        /// Returns all tenants.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Models.Tenant>>> GetAllTenants()
         {
@@ -27,6 +37,9 @@ namespace LocaCraftAPI.Controllers
             return Ok(tenants);
         }
 
+        /// <summary>
+        /// Returns a single tenant by id.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.Tenant>> GetTenantById(int id)
         {
@@ -36,6 +49,9 @@ namespace LocaCraftAPI.Controllers
             return Ok(tenant);
         }
 
+        /// <summary>
+        /// Creates a new tenant.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<Models.Tenant>> CreateTenant(Models.Tenant tenant)
         {
@@ -43,9 +59,13 @@ namespace LocaCraftAPI.Controllers
             return CreatedAtAction(nameof(GetTenantById), new { id = tenant.Id }, tenant);
         }
 
+        /// <summary>
+        /// Updates an existing tenant.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult<Models.Tenant>> UpdateTenant(int id, Models.Tenant tenant)
         {
+            // Ensure route id and payload id match to avoid unintended updates.
             if (id != tenant.Id)
                 return BadRequest();
             var existingTenant = await _tenantRepository.GetByIdAsync(id);
@@ -55,6 +75,9 @@ namespace LocaCraftAPI.Controllers
             return CreatedAtAction(nameof(GetTenantById), new { id = tenant.Id }, tenant);
         }
 
+        /// <summary>
+        /// Deletes a tenant by id.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

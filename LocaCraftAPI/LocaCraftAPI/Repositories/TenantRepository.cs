@@ -4,25 +4,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LocaCraftAPI.Repositories
 {
+    /// <summary>
+    /// EF Core implementation of <see cref="ITenantRepository"/>.
+    /// </summary>
     public class TenantRepository : ITenantRepository
     {
         #region Attributes
+        // EF Core DbContext for persistence.
         private readonly AppDbContext _context;
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Initializes a new repository instance.
+        /// </summary>
         public TenantRepository(AppDbContext context)
         {
             _context = context;
         }
         #endregion
 
+        /// <inheritdoc />
         public async Task CreateAsync(Tenant tenant)
         {
             await _context.Tenants.AddAsync(tenant);
             await _context.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
         public Task DeleteAsync(int id)
         {
             var tenant = _context.Tenants.Find(id);
@@ -32,16 +41,19 @@ namespace LocaCraftAPI.Repositories
             return _context.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Tenant>> GetAllAsync()
         {
             return await _context.Tenants.ToListAsync();
         }
 
+        /// <inheritdoc />
         public async Task<Tenant?> GetByIdAsync(int id)
         {
             return await _context.Tenants.FindAsync(id);
         }
 
+        /// <inheritdoc />
         public Task UpdateAsync(Tenant tenant)
         {
             _context.Tenants.Update(tenant);
