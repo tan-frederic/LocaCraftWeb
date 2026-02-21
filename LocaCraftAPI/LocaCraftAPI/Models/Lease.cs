@@ -9,6 +9,7 @@
         public decimal MonthlyRent { get; set; }
         public decimal MonthlyCharges { get; set; }
         public decimal Deposit { get; set; }
+        public float RentIndexReference { get; set; }
 
         public List<Tenant> Tenants { get; set; } = new List<Tenant>();
         public List<LeaseDocuments> LeaseDocuments { get; set; } = new List<LeaseDocuments>();
