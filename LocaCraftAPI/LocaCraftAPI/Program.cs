@@ -1,5 +1,6 @@
 using LocaCraftAPI.LocaCraftAPI.Data;
 using LocaCraftAPI.Repositories;
+using LocaCraftAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace LocaCraftAPI
@@ -29,6 +30,9 @@ namespace LocaCraftAPI
             });
 
             builder.Services.AddScoped<IRealEstateAssetRepository, RealEstateAssetRepository>();
+
+            builder.Services.AddMemoryCache();
+            builder.Services.AddHttpClient<IInseeService, InseeService>();
 
             builder.Services.AddControllers();
 

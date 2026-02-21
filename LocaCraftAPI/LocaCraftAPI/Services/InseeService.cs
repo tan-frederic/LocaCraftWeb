@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace LocaCraftAPI.Services
 {
-    public class InseeService
+    public class InseeService : IInseeService
     {
         #region Attributes
         private readonly HttpClient _httpClient;
@@ -33,14 +33,7 @@ namespace LocaCraftAPI.Services
 
         public async Task<List<InseeIndexModel>> GetIndexAsync(int lastNIndex = 20)
         {
-            const string cacheKey = "InseeIndexData";
-            if (!_cache.TryGetValue(cacheKey, out List<InseeIndexModel> cachedData))
-            {
-                cachedData = await FetchAndMergeAsync(lastNIndex);
-                _cache.Set(cacheKey, cachedData, TimeSpan.FromHours(24));
-            }
-
-            return cachedData;
+            return await FetchAndMergeAsync(lastNIndex);
         }
 
         private async Task<List<InseeIndexModel>> FetchAndMergeAsync(int lastN)
@@ -78,15 +71,16 @@ namespace LocaCraftAPI.Services
             var response = await _httpClient.GetStringAsync(url);
             var xml = XDocument.Parse(response);
 
-            return xml.Descendants(Ns + "Obs")
-                .ToDictionary(
-                    obs => obs.Element(Ns + "ObsDimension")?.Attribute("value")?.Value ?? "",
-                    obs => double.TryParse(
-                        obs.Element(Ns + "ObsValue")?.Attribute("value")?.Value,
-                        System.Globalization.NumberStyles.Any,
-                        System.Globalization.CultureInfo.InvariantCulture,
-                        out var val) ? val : 0.0
-                );
+            return xml.Descendants()
+                   .Where(e => e.Name.LocalName == "Obs")
+                   .ToDictionary(
+                       obs => obs.Attribute("TIME_PERIOD")?.Value ?? "",
+                       obs => double.TryParse(
+                           obs.Attribute("OBS_VALUE")?.Value,
+                           System.Globalization.NumberStyles.Any,
+                           System.Globalization.CultureInfo.InvariantCulture,
+                           out var val) ? val : 0.0
+                   );
         }
     }
 }

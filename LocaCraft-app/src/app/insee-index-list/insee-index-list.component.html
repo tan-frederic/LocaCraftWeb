@@ -1,0 +1,36 @@
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center my-5">
+        <h2>Insee Indexes</h2>
+    </div>
+
+    @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+
+    @if (indexes.length === 0 && !errorMessage) {
+        <p class="text-muted">Aucun index disponible.</p>
+    } @else {
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>IRL</th>
+                        <th>ILC</th>
+                        <th>ICC</th>
+                        <th>ILAT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let index of indexes">
+                        <td>{{ index.period }}</td>
+                        <td>{{ index.irl }}</td>
+                        <td>{{ index.ilc }}</td>
+                        <td>{{ index.icc }}</td>
+                        <td>{{ index.ilat }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

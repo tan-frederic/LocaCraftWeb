@@ -9,11 +9,11 @@ namespace LocaCraftAPI.Controllers
     public class InseeIndexController : ControllerBase
     {
         #region
-        private readonly InseeService _inseeService;
+        private readonly IInseeService _inseeService;
         #endregion
 
         #region Constructor
-        public InseeIndexController(InseeService inseeService)
+        public InseeIndexController(IInseeService inseeService)
         {
             _inseeService = inseeService;
         }
