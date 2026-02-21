@@ -33,7 +33,16 @@ namespace LocaCraftAPI.Services
 
         public async Task<List<InseeIndexModel>> GetIndexAsync(int lastNIndex = 20)
         {
-            return await FetchAndMergeAsync(lastNIndex);
+            const string cacheKey = "index_insee";
+
+            if (!_cache.TryGetValue(cacheKey, out List<InseeIndexModel>? indexes))
+            {
+                indexes = await FetchAndMergeAsync(lastNIndex);
+                _cache.Set(cacheKey, indexes, TimeSpan.FromHours(24));
+            }
+            if (indexes == null)
+                indexes = new();
+            return indexes;
         }
 
         private async Task<List<InseeIndexModel>> FetchAndMergeAsync(int lastN)

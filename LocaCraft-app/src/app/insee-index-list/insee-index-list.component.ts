@@ -31,4 +31,33 @@ export class InseeIndexListComponent implements OnInit {
       },
     });
   }
+
+  getPeriodYear(period: string): string {
+    if (!period) return '';
+    const normalized = period.replace('/', '-');
+    const parts = normalized.split('-');
+    return parts[0] ?? '';
+  }
+
+  getPeriodMonth(period: string): string {
+    if (!period) return '';
+    const normalized = period.replace('/', '-');
+    const parts = normalized.split('-');
+    if (parts.length >= 2) {
+      const monthNumber = Number(parts[1]);
+      if (!Number.isFinite(monthNumber) || monthNumber < 1 || monthNumber > 12) {
+        return parts[1] ?? '';
+      }
+      return this.getMonthLabel(monthNumber);
+    }
+    return '';
+  }
+
+  private getMonthLabel(monthNumber: number): string {
+    const labels = [
+      'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+    ];
+    return labels[monthNumber - 1] ?? '';
+  }
 }
