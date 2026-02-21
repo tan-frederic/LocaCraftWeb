@@ -3,8 +3,13 @@
     public class Lease
     {
         public int Id { get; set; }
+
         public int RealEstateAssetId { get; set; }
         public RealEstateAsset? RealEstateAsset { get; set; }
+
+        public int LessorId { get; set; }
+        public Lessor? Lessor { get; set; }
+
         public string LeaseeName { get; set; } = string.Empty;
         public decimal MonthlyRent { get; set; }
         public decimal MonthlyCharges { get; set; }
