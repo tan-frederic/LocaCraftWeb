@@ -1,4 +1,6 @@
-﻿namespace LocaCraftAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LocaCraftAPI.Models
 {
     public class Lease
     {
@@ -19,6 +21,7 @@
         public List<Tenant> Tenants { get; set; } = new List<Tenant>();
         public List<LeaseDocuments> LeaseDocuments { get; set; } = new List<LeaseDocuments>();
 
+        [Required]
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 

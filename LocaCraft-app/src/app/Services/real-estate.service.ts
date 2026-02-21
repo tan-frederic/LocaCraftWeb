@@ -18,7 +18,7 @@ export class RealEstateService {
   }
 
   getRealEstateAssetById(id: number): Observable<RealEstateAsset>{
-    return this.http.get<RealEstateAsset>(this.apiUrl);
+    return this.http.get<RealEstateAsset>(`${this.apiUrl}/${id}`);
   }
 
   createRealEstateAsset(realEstate: RealEstateAsset): Observable<RealEstateAsset>{

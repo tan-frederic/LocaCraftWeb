@@ -13,13 +13,17 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './real-estate-details.component.css'
 })
 export class RealEstateDetailsComponent implements OnInit {
+  realEstateId: number | null = null;
 
   constructor(private realEstateAssetService: RealEstateService,
               private router: Router,
               private activatedRoute: ActivatedRoute){ }
 
   ngOnInit(): void {
-    
+    this.activatedRoute.paramMap.subscribe((result) => {
+      const id = result.get('id');
+      this.realEstateId = id ? Number(id) : null;
+    });
   }
 
 }
