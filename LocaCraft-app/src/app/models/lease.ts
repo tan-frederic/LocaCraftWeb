@@ -9,6 +9,7 @@ export interface Lease{
     monthlyRent: number;
     monthlyCharge: number;
     deposit: number;
+    rentIndexReference: number;
     tenants: Tenant[];
     startDate: Date;
     endDate: Date;
