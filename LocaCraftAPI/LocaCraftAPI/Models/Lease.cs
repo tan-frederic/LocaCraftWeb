@@ -12,7 +12,7 @@ namespace LocaCraftAPI.Models
         public int LessorId { get; set; }
         public Lessor? Lessor { get; set; }
 
-        public string LeaseeName { get; set; } = string.Empty;
+        public string LeaseName { get; set; } = string.Empty;
         public decimal MonthlyRent { get; set; }
         public decimal MonthlyCharges { get; set; }
         public decimal Deposit { get; set; }

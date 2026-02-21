@@ -5,15 +5,15 @@ import { Tenant } from "./tenant";
 export interface Lease{
     id: number;
     realEstateAssetId: number;
-    realEstateAsset: RealEstateAsset;
+    realEstateAsset?: RealEstateAsset;
     lessorId: number;
-    lessor: Lessor;
+    lessor?: Lessor;
     leaseName: string;
     monthlyRent: number;
-    monthlyCharge: number;
+    monthlyCharges: number;
     deposit: number;
     rentIndexReference: number;
-    tenants: Tenant[];
+    tenants?: Tenant[];
     startDate: Date;
     endDate: Date;
 }

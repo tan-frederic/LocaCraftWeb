@@ -24,20 +24,37 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Lessor Id*</label>
-        <input required #lessorId="ngModel" type="number" min="1" class="form-control" name="lessorId" [(ngModel)]="formData.lessorId" />
-        @if (lessorId.invalid && (lessorId.touched || lessorId.dirty)) {
-            <div>
-                @if (lessorId.errors?.["required"]) {
-                    <div class="text-danger">Lessor Id is required</div>
-                }
-            </div>
+        <label class="form-label">Lessor*</label>
+        <select
+            required
+            #lessorSelect="ngModel"
+            class="form-select"
+            name="lessorSelection"
+            [(ngModel)]="lessorSelection"
+            (ngModelChange)="onLessorSelectionChange($event)">
+            <option [ngValue]="null">Choose</option>
+            <option [ngValue]="'new'">New Lessor</option>
+            <option *ngFor="let lessor of lessors" [ngValue]="lessor.id">
+                {{ lessor.name }}
+            </option>
+        </select>
+        @if (lessorSelection === null && lessorSelect.dirty) {
+            <div class="text-danger mt-1">Lessor is required</div>
         }
     </div>
 
+    @if (lessorSelection === 'new') {
+        <div class="mb-4">
+            <app-lessor-form
+                [lessor]="newLessor"
+                [showActions]="false">
+            </app-lessor-form>
+        </div>
+    }
+
     <div class="mb-3">
         <label class="form-label">Monthly Rent*</label>
-        <input required #monthlyRent="ngModel" type="number" min="0" step="0.01" class="form-control" name="monthlyRent" [(ngModel)]="formData.monthlyRent" />
+        <input required #monthlyRent="ngModel" type="number" min="0" step="0.01" class="form-control" name="monthlyRent" [(ngModel)]="formData.monthlyRent" (blur)="formatAmount('monthlyRent')" />
         @if (monthlyRent.invalid && (monthlyRent.touched || monthlyRent.dirty)) {
             <div>
                 @if (monthlyRent.errors?.["required"]) {
@@ -49,12 +66,12 @@
 
     <div class="mb-3">
         <label class="form-label">Monthly Charge</label>
-        <input #monthlyCharge="ngModel" type="number" min="0" step="0.01" class="form-control" name="monthlyCharge" [(ngModel)]="formData.monthlyCharge" />
+        <input #monthlyCharge="ngModel" type="number" min="0" step="0.01" class="form-control" name="monthlyCharge" [(ngModel)]="formData.monthlyCharge" (blur)="formatAmount('monthlyCharge')" />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Deposit</label>
-        <input #deposit="ngModel" type="number" min="0" step="0.01" class="form-control" name="deposit" [(ngModel)]="formData.deposit" />
+        <input #deposit="ngModel" type="number" min="0" step="0.01" class="form-control" name="deposit" [(ngModel)]="formData.deposit" (blur)="formatAmount('deposit')" />
     </div>
 
     <div class="mb-3">
@@ -75,15 +92,14 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">End Date*</label>
-        <input required #endDate="ngModel" type="date" class="form-control" name="endDate" [(ngModel)]="formData.endDate" />
-        @if (endDate.invalid && (endDate.touched || endDate.dirty)) {
-            <div>
-                @if (endDate.errors?.["required"]) {
-                    <div class="text-danger">End Date is required</div>
-                }
+        <div class="d-flex align-items-center justify-content-between">
+            <label class="form-label mb-0">End Date</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="ongoingLease" name="ongoingLease" [(ngModel)]="isOngoing">
+                <label class="form-check-label" for="ongoingLease">Ongoing</label>
             </div>
-        }
+        </div>
+        <input #endDate="ngModel" type="date" class="form-control" name="endDate" [(ngModel)]="formData.endDate" [disabled]="isOngoing" />
     </div>
 
     @if (errorMessage) {
@@ -91,7 +107,7 @@
     }
 
     <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary btn-lg" [disabled]="leaseForm.invalid || isSubmitting || !formData.realEstateAssetId">
+        <button type="submit" class="btn btn-primary btn-lg" [disabled]="leaseForm.invalid || isSubmitting || !formData.realEstateAssetId || (!formData.lessorId && lessorSelection !== 'new') || (lessorSelection === 'new' && !isNewLessorValid())">
             Create
         </button>
         @if (isInDrawer) {

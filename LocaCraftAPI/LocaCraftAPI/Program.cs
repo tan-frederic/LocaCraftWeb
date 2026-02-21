@@ -30,6 +30,9 @@ namespace LocaCraftAPI
             });
 
             builder.Services.AddScoped<IRealEstateAssetRepository, RealEstateAssetRepository>();
+            builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+            builder.Services.AddScoped<ILeaseRepository, LeaseRepository>();
+            builder.Services.AddScoped<ILessorRepository, LessorRepository>();
 
             builder.Services.AddMemoryCache();
             builder.Services.AddHttpClient<IInseeService, InseeService>();

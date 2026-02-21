@@ -1,4 +1,5 @@
-﻿using LocaCraftAPI.Repositories;
+﻿using LocaCraftAPI.Models;
+using LocaCraftAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LocaCraftAPI.Controllers
@@ -31,7 +32,7 @@ namespace LocaCraftAPI.Controllers
         /// Returns all tenants.
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Models.Tenant>>> GetAllTenants()
+        public async Task<ActionResult<IEnumerable<Tenant>>> GetAllTenants()
         {
             var tenants = await _tenantRepository.GetAllAsync();
             return Ok(tenants);
@@ -41,7 +42,7 @@ namespace LocaCraftAPI.Controllers
         /// Returns a single tenant by id.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Models.Tenant>> GetTenantById(int id)
+        public async Task<ActionResult<Tenant>> GetTenantById(int id)
         {
             var tenant = await _tenantRepository.GetByIdAsync(id);
             if (tenant == null)
@@ -53,7 +54,7 @@ namespace LocaCraftAPI.Controllers
         /// Creates a new tenant.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<Models.Tenant>> CreateTenant(Models.Tenant tenant)
+        public async Task<ActionResult<Tenant>> CreateTenant(Models.Tenant tenant)
         {
             await _tenantRepository.CreateAsync(tenant);
             return CreatedAtAction(nameof(GetTenantById), new { id = tenant.Id }, tenant);
@@ -63,7 +64,7 @@ namespace LocaCraftAPI.Controllers
         /// Updates an existing tenant.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<ActionResult<Models.Tenant>> UpdateTenant(int id, Models.Tenant tenant)
+        public async Task<ActionResult<Tenant>> UpdateTenant(int id, Tenant tenant)
         {
             // Ensure route id and payload id match to avoid unintended updates.
             if (id != tenant.Id)
