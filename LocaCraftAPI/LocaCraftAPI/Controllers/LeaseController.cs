@@ -48,6 +48,13 @@ namespace LocaCraftAPI.Controllers
             return Ok(lease);
         }
 
+        [HttpGet("realestateasset/{realEstateAssetId}")]
+        public async Task<ActionResult<IEnumerable<Lease>>> GetLeasesByRealEstateAssetId(int realEstateAssetId)
+        {
+            var leases = await _leaseRepository.GetByRealEstateAssetIdAsync(realEstateAssetId);
+            return Ok(leases);
+        }
+
         /// <summary>
         /// Creates a new lease.
         /// </summary>

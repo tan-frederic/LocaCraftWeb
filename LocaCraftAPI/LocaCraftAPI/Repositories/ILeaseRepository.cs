@@ -17,6 +17,8 @@ namespace LocaCraftAPI.Repositories
         /// </summary>
         public Task<Lease?> GetByIdAsync(int id);
 
+        public Task<IEnumerable<Lease>> GetByRealEstateAssetIdAsync(int realEstateAssetId);
+
         /// <summary>
         /// Creates a new lease.
         /// </summary>

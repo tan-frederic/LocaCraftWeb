@@ -9,6 +9,16 @@
     <div class="pb-5">
         @if (leases.length === 0) {
             <p class="text-muted">Aucun bail disponible.</p>
+        } @else {
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let lease of leases">
+                    <span>{{ lease.leaseName }}</span>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm" (click)="editLease(lease)">Edit</button>
+                        <button class="btn btn-outline-danger btn-sm" (click)="deleteLease(lease)">Delete</button>
+                    </div>
+                </li>
+            </ul>
         }
     </div>
 </div>

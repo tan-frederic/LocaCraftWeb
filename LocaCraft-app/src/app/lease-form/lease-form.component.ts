@@ -6,6 +6,7 @@ import { LeaseService } from '../Services/lease.service';
 import { RealEstateService } from '../Services/real-estate.service';
 import { LessorService } from '../Services/lessor.service';
 import { Lease } from '../models/lease';
+import { RealEstateAsset } from '../models/real-estate-assets';
 import { Lessor } from '../models/lessor';
 import { LessorFormComponent } from '../lessor-form/lessor-form.component';
 
@@ -34,6 +35,8 @@ export class LeaseFormComponent implements OnChanges, OnInit {
   isLoadingLessors: boolean = false;
   newLessor: Lessor = this.getEmptyLessor();
   isOngoing: boolean = false;
+  isEditing: boolean = false;
+  leaseId: number | null = null;
 
   constructor(
     private leaseService: LeaseService,
@@ -92,6 +95,7 @@ export class LeaseFormComponent implements OnChanges, OnInit {
   ngOnInit(): void {
     this.activatedRoute.queryParamMap.subscribe((params) => {
       const realEstateAssetIdParam = params.get('realEstateAssetId');
+      const leaseIdParam = params.get('leaseId');
       if (realEstateAssetIdParam) {
         this.realEstateAssetId = Number(realEstateAssetIdParam);
         this.formData = {
@@ -100,6 +104,11 @@ export class LeaseFormComponent implements OnChanges, OnInit {
         };
         this.loadRealEstateName(this.realEstateAssetId);
         this.loadLessors(this.realEstateAssetId);
+      }
+      if (leaseIdParam) {
+        this.leaseId = Number(leaseIdParam);
+        this.isEditing = true;
+        this.loadLease(this.leaseId);
       }
     });
   }
@@ -175,21 +184,57 @@ export class LeaseFormComponent implements OnChanges, OnInit {
     this.formData.lessorId = typeof value === 'number' ? value : null;
   }
 
+  private loadLease(leaseId: number): void {
+    this.leaseService.getLeaseById(leaseId).subscribe({
+      next: (lease) => {
+        this.formData = {
+          ...this.formData,
+          leaseName: lease.leaseName ?? '',
+          realEstateAssetId: lease.realEstateAssetId,
+          lessorId: lease.lessorId,
+          monthlyRent: lease.monthlyRent,
+          monthlyCharge: lease.monthlyCharges,
+          deposit: lease.deposit,
+          rentIndexReference: lease.rentIndexReference,
+          startDate: this.formatDateInput(lease.startDate),
+          endDate: this.formatDateInput(lease.endDate),
+        };
+        this.lessorSelection = lease.lessorId;
+        this.isOngoing = !lease.endDate;
+        if (lease.realEstateAssetId && lease.realEstateAssetId !== this.realEstateAssetId) {
+          this.realEstateAssetId = lease.realEstateAssetId;
+          this.loadRealEstateName(lease.realEstateAssetId);
+          this.loadLessors(lease.realEstateAssetId);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading Lease', err);
+      },
+    });
+  }
+
   private createLease(): void {
     const leaseToCreate: Lease = {
-      id: 0,
+      id: this.isEditing && this.leaseId ? this.leaseId : 0,
       realEstateAssetId: this.formData.realEstateAssetId ?? 0,
+      realEstateAsset: this.getEmptyRealEstateAsset(),
       lessorId: this.formData.lessorId ?? 0,
+      lessor: this.getEmptyLessor(),
       leaseName: this.formData.leaseName.trim(),
       monthlyRent: this.formData.monthlyRent ?? 0,
       monthlyCharges: this.formData.monthlyCharge ?? 0,
       deposit: this.formData.deposit ?? 0,
       rentIndexReference: this.formData.rentIndexReference ?? 0,
+      tenants: [],
       startDate: new Date(this.formData.startDate),
       endDate: this.isOngoing || !this.formData.endDate ? new Date(this.formData.startDate) : new Date(this.formData.endDate),
     };
 
-    this.leaseService.createLease(leaseToCreate).subscribe({
+    const request$ = this.isEditing
+      ? this.leaseService.updateLease(leaseToCreate)
+      : this.leaseService.createLease(leaseToCreate);
+
+    request$.subscribe({
       next: (result) => {
         this.isSubmitting = false;
         this.formSubmitted.emit(result);
@@ -198,8 +243,8 @@ export class LeaseFormComponent implements OnChanges, OnInit {
         }
       },
       error: (err) => {
-        console.error('Error creating Lease', err);
-        this.errorMessage = `Error occured on Lease creation (${err.status})`;
+        console.error(`Error ${this.isEditing ? 'updating' : 'creating'} Lease`, err);
+        this.errorMessage = `Error occured on Lease ${this.isEditing ? 'update' : 'creation'} (${err.status})`;
         this.isSubmitting = false;
         this.formError.emit(this.errorMessage);
       },
@@ -224,6 +269,30 @@ export class LeaseFormComponent implements OnChanges, OnInit {
     }
     const normalized = Number(value);
     this.formData[field] = Number(normalized.toFixed(2));
+  }
+
+  private getEmptyRealEstateAsset(): RealEstateAsset {
+    return {
+      id: 0,
+      name: '',
+      description: '',
+      address: '',
+      addressComplement: '',
+      postalCode: '',
+      city: '',
+      country: '',
+      leases: [],
+    };
+  }
+
+  private formatDateInput(value: Date | string | null | undefined): string {
+    if (!value) return '';
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
 

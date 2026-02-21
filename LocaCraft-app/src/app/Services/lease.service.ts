@@ -12,7 +12,23 @@ export class LeaseService {
 
   constructor(private http: HttpClient) {}
 
+  getLeasesByRealEstateAssetId(realEstateAssetId: number): Observable<Lease[]> {
+    return this.http.get<Lease[]>(`${this.apiUrl}/realestateasset/${realEstateAssetId}`);
+  }
+
+  getLeaseById(id: number): Observable<Lease> {
+    return this.http.get<Lease>(`${this.apiUrl}/${id}`);
+  }
+
   createLease(lease: Lease): Observable<Lease> {
     return this.http.post<Lease>(this.apiUrl, lease);
+  }
+
+  updateLease(lease: Lease): Observable<Lease> {
+    return this.http.put<Lease>(`${this.apiUrl}/${lease.id}`, lease);
+  }
+
+  deleteLease(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
