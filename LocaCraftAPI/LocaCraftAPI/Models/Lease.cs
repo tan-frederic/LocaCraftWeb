@@ -17,13 +17,14 @@ namespace LocaCraftAPI.Models
         public decimal MonthlyCharges { get; set; }
         public decimal Deposit { get; set; }
         public double? RentIndexReference { get; set; }
+        public bool IsOngoing { get; set; }
 
         public List<Tenant> Tenants { get; set; } = new List<Tenant>();
         public List<LeaseDocuments> LeaseDocuments { get; set; } = new List<LeaseDocuments>();
 
         [Required]
         public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
     }
 }

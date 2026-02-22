@@ -187,6 +187,8 @@ export class LeaseFormComponent implements OnChanges, OnInit {
   private loadLease(leaseId: number): void {
     this.leaseService.getLeaseById(leaseId).subscribe({
       next: (lease) => {
+        const isOngoing = lease.isOngoing ?? !lease.endDate;
+        this.isOngoing = isOngoing;
         this.formData = {
           ...this.formData,
           leaseName: lease.leaseName ?? '',
@@ -197,10 +199,9 @@ export class LeaseFormComponent implements OnChanges, OnInit {
           deposit: lease.deposit,
           rentIndexReference: lease.rentIndexReference,
           startDate: this.formatDateInput(lease.startDate),
-          endDate: this.formatDateInput(lease.endDate),
+          endDate: isOngoing ? '' : this.formatDateInput(lease.endDate),
         };
         this.lessorSelection = lease.lessorId;
-        this.isOngoing = !lease.endDate;
         if (lease.realEstateAssetId && lease.realEstateAssetId !== this.realEstateAssetId) {
           this.realEstateAssetId = lease.realEstateAssetId;
           this.loadRealEstateName(lease.realEstateAssetId);
@@ -214,6 +215,9 @@ export class LeaseFormComponent implements OnChanges, OnInit {
   }
 
   private createLease(): void {
+    const endDateValue = !this.isOngoing && this.formData.endDate
+      ? new Date(this.formData.endDate)
+      : null;
     const leaseToCreate: Lease = {
       id: this.isEditing && this.leaseId ? this.leaseId : 0,
       realEstateAssetId: this.formData.realEstateAssetId ?? 0,
@@ -225,9 +229,10 @@ export class LeaseFormComponent implements OnChanges, OnInit {
       monthlyCharges: this.formData.monthlyCharge ?? 0,
       deposit: this.formData.deposit ?? 0,
       rentIndexReference: this.formData.rentIndexReference ?? 0,
+      isOngoing: this.isOngoing,
       tenants: [],
       startDate: new Date(this.formData.startDate),
-      endDate: this.isOngoing || !this.formData.endDate ? new Date(this.formData.startDate) : new Date(this.formData.endDate),
+      endDate: endDateValue,
     };
 
     const request$ = this.isEditing
@@ -269,6 +274,13 @@ export class LeaseFormComponent implements OnChanges, OnInit {
     }
     const normalized = Number(value);
     this.formData[field] = Number(normalized.toFixed(2));
+  }
+
+  onOngoingToggle(isOngoing: boolean): void {
+    this.isOngoing = isOngoing;
+    if (isOngoing) {
+      this.formData.endDate = '';
+    }
   }
 
   private getEmptyRealEstateAsset(): RealEstateAsset {

@@ -13,7 +13,8 @@ export interface Lease{
     monthlyCharges: number;
     deposit: number;
     rentIndexReference: number;
+    isOngoing: boolean;
     tenants?: Tenant[];
     startDate: Date;
-    endDate: Date;
+    endDate: Date | null;
 }

@@ -12,7 +12,12 @@
         } @else {
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let lease of leases">
-                    <span>{{ lease.leaseName }}</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span>{{ lease.leaseName }}</span>
+                        <span class="badge" [ngClass]="lease.isOngoing ? 'bg-success' : 'bg-secondary'">
+                            {{ lease.isOngoing ? 'Ongoing' : 'Ended' }}
+                        </span>
+                    </div>
                     <div class="d-flex gap-2">
                         <button class="btn btn-outline-primary btn-sm" (click)="editLease(lease)">Edit</button>
                         <button class="btn btn-outline-danger btn-sm" (click)="deleteLease(lease)">Delete</button>

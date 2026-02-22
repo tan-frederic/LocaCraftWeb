@@ -1,5 +1,21 @@
 # LocaCraftApp
 
+Angular frontend for the LocaCraft platform.
+
+For full project documentation (backend + frontend), see the root `README.md`.
+
+## API Configuration
+
+The API base URL is configured in:
+- `src/app/environments/environment.ts`
+
+Default value:
+```
+https://localhost:7195/api
+```
+
+## Angular CLI
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.1.
 
 ## Development server
