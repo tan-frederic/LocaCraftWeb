@@ -54,6 +54,18 @@ namespace LocaCraftAPI.Repositories
         }
 
         /// <inheritdoc />
+        public async Task<Tenant?> GetByLeaseIdAsync(int leaseId)
+        {
+            return await _context.Tenants.FirstOrDefaultAsync(t => t.LeaseId == leaseId);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<Tenant>> GetAllByLeaseIdAsync(int leaseId)
+        {
+            return await _context.Tenants.Where(t => t.LeaseId == leaseId).ToListAsync();
+        }
+
+        /// <inheritdoc />
         public Task UpdateAsync(Tenant tenant)
         {
             _context.Tenants.Update(tenant);

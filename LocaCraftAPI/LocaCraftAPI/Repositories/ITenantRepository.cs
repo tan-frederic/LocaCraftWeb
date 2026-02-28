@@ -18,6 +18,16 @@ namespace LocaCraftAPI.Repositories
         public Task<Tenant?> GetByIdAsync(int id);
 
         /// <summary>
+        /// Returns the tenant linked to a lease id or null if not found.
+        /// </summary>
+        public Task<Tenant?> GetByLeaseIdAsync(int leaseId);
+
+        /// <summary>
+        /// Returns all tenants linked to a lease id.
+        /// </summary>
+        public Task<IEnumerable<Tenant>> GetAllByLeaseIdAsync(int leaseId);
+
+        /// <summary>
         /// Creates a new tenant.
         /// </summary>
         public Task CreateAsync(Tenant tenant);

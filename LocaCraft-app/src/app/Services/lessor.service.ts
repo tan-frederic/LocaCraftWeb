@@ -20,6 +20,10 @@ export class LessorService {
     return this.http.get<Lessor[]>(`${this.apiUrl}?realEstateAssetId=${realEstateAssetId}`);
   }
 
+  getLessorById(id: number): Observable<Lessor> {
+    return this.http.get<Lessor>(`${this.apiUrl}/${id}`);
+  }
+
   createLessor(lessor: Lessor): Observable<Lessor> {
     return this.http.post<Lessor>(this.apiUrl, lessor);
   }

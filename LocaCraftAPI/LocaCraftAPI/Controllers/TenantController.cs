@@ -50,6 +50,22 @@ namespace LocaCraftAPI.Controllers
             return Ok(tenant);
         }
 
+        [HttpGet("lease/{leaseId}")]
+        public async Task<ActionResult<Tenant>> GetTenantByLeaseId(int leaseId)
+        {
+            var tenant = await _tenantRepository.GetByLeaseIdAsync(leaseId);
+            if (tenant == null)
+                return NotFound();
+            return Ok(tenant);
+        }
+
+        [HttpGet("lease/{leaseId}/all")]
+        public async Task<ActionResult<IEnumerable<Tenant>>> GetTenantsByLeaseId(int leaseId)
+        {
+            var tenants = await _tenantRepository.GetAllByLeaseIdAsync(leaseId);
+            return Ok(tenants);
+        }
+
         /// <summary>
         /// Creates a new tenant.
         /// </summary>

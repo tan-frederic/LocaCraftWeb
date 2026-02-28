@@ -5,9 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LeaseService } from '../Services/lease.service';
 import { RealEstateService } from '../Services/real-estate.service';
 import { LessorService } from '../Services/lessor.service';
+import { TenantService } from '../Services/tenant.service';
+import { RentReceiptService, RentReceiptData, RentReceiptLine } from '../Services/rent-receipt.service';
 import { Lease } from '../models/lease';
 import { Lessor } from '../models/lessor';
 import { LessorFormComponent } from '../lessor-form/lessor-form.component';
+import { forkJoin } from 'rxjs';
+import { Tenant } from '../models/tenant';
 
 @Component({
   selector: 'app-lease-form',
@@ -36,12 +40,21 @@ export class LeaseFormComponent implements OnChanges, OnInit {
   isOngoing: boolean = false;
   isEditing: boolean = false;
   leaseId: number | null = null;
+  receiptMonth: string = '';
+  receiptError: string = '';
+  isGeneratingReceipt: boolean = false;
+  tenants: Tenant[] = [];
+  tenantForm: Tenant = this.getEmptyTenant();
+  tenantError: string = '';
+  isSubmittingTenant: boolean = false;
 
   constructor(
     private leaseService: LeaseService,
     private activatedRoute: ActivatedRoute,
     private realEstateService: RealEstateService,
     private lessorService: LessorService,
+    private tenantService: TenantService,
+    private rentReceiptService: RentReceiptService,
     private router: Router,
   ) {}
 
@@ -108,6 +121,7 @@ export class LeaseFormComponent implements OnChanges, OnInit {
         this.leaseId = Number(leaseIdParam);
         this.isEditing = true;
         this.loadLease(this.leaseId);
+        this.loadTenants(this.leaseId);
       }
     });
   }
@@ -154,6 +168,8 @@ export class LeaseFormComponent implements OnChanges, OnInit {
       city: '',
       postalCode: '',
       country: '',
+      phone: '',
+      email: '',
       leases: [],
     };
   }
@@ -200,6 +216,9 @@ export class LeaseFormComponent implements OnChanges, OnInit {
           startDate: this.formatDateInput(lease.startDate),
           endDate: isOngoing ? '' : this.formatDateInput(lease.endDate),
         };
+        if (!this.receiptMonth) {
+          this.receiptMonth = this.formatMonthInput(lease.startDate) || this.getCurrentMonth();
+        }
         this.lessorSelection = lease.lessorId;
         if (lease.realEstateAssetId && lease.realEstateAssetId !== this.realEstateAssetId) {
           this.realEstateAssetId = lease.realEstateAssetId;
@@ -209,6 +228,18 @@ export class LeaseFormComponent implements OnChanges, OnInit {
       },
       error: (err) => {
         console.error('Error loading Lease', err);
+      },
+    });
+  }
+
+  private loadTenants(leaseId: number): void {
+    this.tenantService.getTenantsByLeaseId(leaseId).subscribe({
+      next: (data) => {
+        this.tenants = data;
+      },
+      error: (err) => {
+        console.error('Error loading Tenants', err);
+        this.tenants = [];
       },
     });
   }
@@ -261,6 +292,149 @@ export class LeaseFormComponent implements OnChanges, OnInit {
         this.formError.emit(this.errorMessage);
       },
     });
+  }
+
+  generateRentReceipt(): void {
+    if (!this.isEditing || !this.leaseId) {
+      this.receiptError = 'Lease must be saved before generating a receipt.';
+      return;
+    }
+    if (!this.receiptMonth) {
+      this.receiptError = 'Please select a month for the receipt.';
+      return;
+    }
+    if (!this.formData.lessorId) {
+      this.receiptError = 'Lessor information is required.';
+      return;
+    }
+
+    this.isGeneratingReceipt = true;
+    this.receiptError = '';
+
+    const leasePayload = this.buildLeasePayload();
+    const receiptMonthLabel = this.formatReceiptLineDate(this.receiptMonth);
+
+    forkJoin({
+      lessor: this.lessorService.getLessorById(this.formData.lessorId),
+      tenant: this.tenantService.getTenantByLeaseId(this.leaseId),
+    }).subscribe({
+      next: ({ lessor, tenant }) => {
+        const lines: RentReceiptLine[] = [
+          {
+            date: receiptMonthLabel,
+            amount: this.formData.monthlyRent ?? 0,
+            wording: 'Loyer',
+          },
+          {
+            date: receiptMonthLabel,
+            amount: this.formData.monthlyCharge ?? 0,
+            wording: 'Charges',
+          },
+        ];
+
+        const receiptData: RentReceiptData = {
+          tenant,
+          lessor,
+          lease: { ...leasePayload, id: this.leaseId ?? leasePayload.id },
+          rentReceiptLines: lines,
+          city: lessor.city || tenant.city || '',
+          dateCreation: new Date().toLocaleDateString('fr-FR'),
+        };
+
+        this.rentReceiptService.generateRentReceiptPDF(receiptData);
+        this.isGeneratingReceipt = false;
+      },
+      error: (err) => {
+        console.error('Error generating rent receipt', err);
+        this.receiptError = `Error occured during receipt generation (${err.status})`;
+        this.isGeneratingReceipt = false;
+      },
+    });
+  }
+
+  addTenant(): void {
+    if (!this.isEditing || !this.leaseId) {
+      this.tenantError = 'Lease must be saved before adding a tenant.';
+      return;
+    }
+    if (this.leaseId <= 0) {
+      this.tenantError = 'Invalid lease id for tenant creation.';
+      return;
+    }
+    if (this.isSubmittingTenant) return;
+    if (!this.isTenantValid()) {
+      this.tenantError = 'All required tenant fields must be filled.';
+      return;
+    }
+
+    this.isSubmittingTenant = true;
+    this.tenantError = '';
+
+    const payload: Tenant = {
+      ...this.tenantForm,
+      leaseId: this.leaseId,
+    };
+    delete (payload as Partial<Tenant>).lease;
+
+    this.tenantService.createTenant(payload).subscribe({
+      next: (tenant) => {
+        this.tenants = [...this.tenants, tenant];
+        this.tenantForm = this.getEmptyTenant();
+        this.isSubmittingTenant = false;
+      },
+      error: (err) => {
+        console.error('Error creating Tenant', err);
+        this.tenantError = `Error occured during Tenant creation (${err.status})`;
+        this.isSubmittingTenant = false;
+      },
+    });
+  }
+
+  private isTenantValid(): boolean {
+    return Boolean(
+      this.tenantForm.name?.trim() &&
+      this.tenantForm.address?.trim() &&
+      this.tenantForm.city?.trim() &&
+      this.tenantForm.postalCode?.trim() &&
+      this.tenantForm.country?.trim()
+    );
+  }
+
+  private getCurrentMonth(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = `${now.getMonth() + 1}`.padStart(2, '0');
+    return `${year}-${month}`;
+  }
+
+  private formatMonthInput(value: Date | string | null | undefined): string {
+    if (!value) return '';
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    return `${year}-${month}`;
+  }
+
+  private formatReceiptLineDate(monthValue: string): string {
+    const match = /^(\d{4})-(\d{2})$/.exec(monthValue);
+    if (!match) return monthValue;
+    return `${match[2]}/${match[1]}`;
+  }
+
+  private getEmptyTenant(): Tenant {
+    return {
+      id: 0,
+      leaseId: 0,
+      name: '',
+      surname: '',
+      phoneNumber: '',
+      email: '',
+      address: '',
+      city: '',
+      postalCode: '',
+      country: '',
+    };
   }
 
   isNewLessorValid(): boolean {

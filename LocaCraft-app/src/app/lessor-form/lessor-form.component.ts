@@ -56,6 +56,8 @@ export class LessorFormComponent {
       city: '',
       postalCode: '',
       country: '',
+      phone: '',
+      email: '',
       leases: [],
     };
   }

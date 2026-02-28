@@ -7,5 +7,7 @@ export interface Lessor{
     city: string;
     postalCode: string;
     country: string;
+    phone: string;
+    email: string;
     leases: Lease[];
 }
