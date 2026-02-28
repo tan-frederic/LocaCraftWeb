@@ -77,8 +77,19 @@ namespace LocaCraftAPI.Controllers
             var existingLease = await _leaseRepository.GetByIdAsync(id);
             if (existingLease == null)
                 return NotFound();
-            await _leaseRepository.UpdateAsync(lease);
-            return CreatedAtAction(nameof(GetLeaseById), new { id = lease.Id }, lease);
+            existingLease.RealEstateAssetId = lease.RealEstateAssetId;
+            existingLease.LessorId = lease.LessorId;
+            existingLease.LeaseName = lease.LeaseName;
+            existingLease.MonthlyRent = lease.MonthlyRent;
+            existingLease.MonthlyCharges = lease.MonthlyCharges;
+            existingLease.Deposit = lease.Deposit;
+            existingLease.RentIndexReference = lease.RentIndexReference;
+            existingLease.IsOngoing = lease.IsOngoing;
+            existingLease.StartDate = lease.StartDate;
+            existingLease.EndDate = lease.EndDate;
+
+            await _leaseRepository.UpdateAsync(existingLease);
+            return CreatedAtAction(nameof(GetLeaseById), new { id = existingLease.Id }, existingLease);
         }
 
         /// <summary>
