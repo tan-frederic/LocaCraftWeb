@@ -41,12 +41,12 @@ export class RentReceiptService {
 
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(data.lessor.name, marginLeft, 20);
+    doc.text(`${data.lessor.name}`, marginLeft, 20);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.text(data.lessor.address, marginLeft, 26);
-    doc.text(data.lessor.postalCode, marginLeft, 31);
+    doc.text(`${data.lessor.postalCode} ${data.lessor.city}`, marginLeft, 31);
     doc.text(`tel : ${data.lessor.phone}`, marginLeft, 36);
     doc.text(data.lessor.email, marginLeft, 41);
 
@@ -56,16 +56,16 @@ export class RentReceiptService {
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Locataire : ${data.tenant.name}`, marginLeft, 68);
+    doc.text(`Locataire : ${data.tenant.name} ${data.tenant.surname.toUpperCase()}`, marginLeft, 68);
     doc.text(data.tenant.address, marginLeft, 73);
-    doc.text(data.tenant.postalCode, marginLeft, 78);
+    doc.text(`${data.tenant.postalCode} ${data.tenant.city}`, marginLeft, 78);
 
     const colDroite = 120;
     doc.setFont('helvetica', 'bold');
-    doc.text(`$${data.tenant.name}`, colDroite, 68);
+    doc.text(`${data.tenant.name} ${data.tenant.surname.toUpperCase()}`, colDroite, 68);
     doc.setFont('helvetica', 'normal');
     doc.text(data.tenant.address, colDroite, 74);
-    doc.text(data.tenant.postalCode, colDroite, 80);
+    doc.text(`${data.tenant.postalCode} ${data.tenant.city}`, colDroite, 80);
 
     doc.text(
       `${data.city}, le ${data.dateCreation}`,
