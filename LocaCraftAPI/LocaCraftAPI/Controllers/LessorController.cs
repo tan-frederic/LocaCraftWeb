@@ -9,7 +9,7 @@ namespace LocaCraftAPI.Controllers
     public class LessorController : ControllerBase
     {
         #region Attributes
-        public readonly ILessorRepository _lessorRepository;
+        private readonly ILessorRepository _lessorRepository;
         #endregion
 
         #region Constructor
@@ -51,7 +51,7 @@ namespace LocaCraftAPI.Controllers
             if (existingLessor == null)
                 return NotFound();
             await _lessorRepository.UpdateAsync(lessor);
-            return CreatedAtAction(nameof(GetLessorById), new { id = lessor.Id }, lessor);
+            return Ok(lessor);
         }
 
         [HttpDelete("{id}")]

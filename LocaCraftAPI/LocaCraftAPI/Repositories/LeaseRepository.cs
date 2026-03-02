@@ -35,8 +35,7 @@ namespace LocaCraftAPI.Repositories
         public async Task DeleteAsync(int id)
         {
             var lease = await _context.Leases.FindAsync(id);
-            if (lease == null)
-                throw new KeyNotFoundException($"Lease with id {id} not found.");
+            if (lease == null) return;
             _context.Leases.Remove(lease);
             await _context.SaveChangesAsync();
         }

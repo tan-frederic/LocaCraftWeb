@@ -67,7 +67,7 @@ namespace LocaCraftAPI.Controllers
             if (existingAsset == null)
                 return NotFound();
             await _realEstateAssetRepository.UpdateAsync(asset);
-            return CreatedAtAction(nameof(GetRealEstateAssetById), new { id = asset.Id }, asset);
+            return Ok(asset);
         }
 
         /// <summary>

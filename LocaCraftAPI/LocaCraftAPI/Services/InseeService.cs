@@ -19,8 +19,6 @@ namespace LocaCraftAPI.Services
             { "ILAT", "001762464" }
         };
 
-        private static readonly XNamespace Ns = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic";
-
         #endregion
 
         #region Constructor

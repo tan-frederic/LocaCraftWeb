@@ -13,7 +13,7 @@ namespace LocaCraftAPI.Controllers
     {
         #region Attributes
         // Repository abstraction for tenant persistence.
-        public readonly ITenantRepository _tenantRepository;
+        private readonly ITenantRepository _tenantRepository;
         #endregion
 
         #region Constructor
@@ -89,7 +89,7 @@ namespace LocaCraftAPI.Controllers
             if (existingTenant == null)
                 return NotFound();
             await _tenantRepository.UpdateAsync(tenant);
-            return CreatedAtAction(nameof(GetTenantById), new { id = tenant.Id }, tenant);
+            return Ok(tenant);
         }
 
         /// <summary>

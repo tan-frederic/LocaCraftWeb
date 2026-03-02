@@ -26,8 +26,7 @@ namespace LocaCraftAPI.Repositories
         public async Task DeleteAsync(int id)
         {
             var lessor = await _context.Lessors.FindAsync(id);
-            if (lessor == null)
-                throw new KeyNotFoundException($"Lessor with ID {id} not found.");
+            if (lessor == null) return;
             _context.Lessors.Remove(lessor);
             await _context.SaveChangesAsync();
         }

@@ -13,6 +13,8 @@ namespace LocaCraftAPI.LocaCraftAPI.Data
 
         public DbSet<Lessor> Lessors { get; set; }
 
+        public DbSet<LeaseDocuments> LeaseDocuments { get; set; }
+
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {

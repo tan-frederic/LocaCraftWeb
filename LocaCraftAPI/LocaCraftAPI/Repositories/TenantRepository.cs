@@ -32,13 +32,12 @@ namespace LocaCraftAPI.Repositories
         }
 
         /// <inheritdoc />
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            var tenant = _context.Tenants.Find(id);
-            if (tenant == null)
-                throw new KeyNotFoundException($"Tenant with id {id} not found.");
+            var tenant = await _context.Tenants.FindAsync(id);
+            if (tenant == null) return;
             _context.Tenants.Remove(tenant);
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         /// <inheritdoc />

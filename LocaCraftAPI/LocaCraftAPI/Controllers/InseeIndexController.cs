@@ -8,7 +8,7 @@ namespace LocaCraftAPI.Controllers
     [ApiController]
     public class InseeIndexController : ControllerBase
     {
-        #region
+        #region Attributes
         private readonly IInseeService _inseeService;
         #endregion
 
