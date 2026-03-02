@@ -51,6 +51,10 @@ namespace LocaCraftAPI.Repositories
 
         public Task UpdateAsync(Lessor lessor)
         {
+            var tracked = _context.ChangeTracker.Entries<Lessor>()
+                .FirstOrDefault(e => e.Entity.Id == lessor.Id);
+            if (tracked != null)
+                tracked.State = EntityState.Detached;
             _context.Lessors.Update(lessor);
             return _context.SaveChangesAsync();
         }

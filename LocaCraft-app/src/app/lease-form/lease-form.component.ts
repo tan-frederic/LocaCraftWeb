@@ -437,6 +437,13 @@ export class LeaseFormComponent implements OnChanges, OnInit {
     };
   }
 
+  get selectedLessor(): Lessor | null {
+    if (typeof this.lessorSelection === 'number') {
+      return this.lessors.find(l => l.id === this.lessorSelection) ?? null;
+    }
+    return null;
+  }
+
   isNewLessorValid(): boolean {
     return Boolean(
       this.newLessor.name?.trim() &&
