@@ -8,7 +8,7 @@
         </button>
     </div>
 
-    <div class="pb-5">
+    <div class="pb-4">
         @if (realEstateAssets.length === 0) {
             <p class="text-muted">Aucun bien immobilier disponible.</p>
         } @else {
@@ -25,7 +25,7 @@
                         <p class="card-text">{{asset.description}}</p>
                         }
                         <div class="mt-auto d-flex justify-content-between"> 
-                            <button class="btn btn-primary btn-sm mx-2" (click)="editRealEstateAsset(asset.id)">Edit</button>
+                            <button class="btn btn-primary btn-sm mx-2" (click)="editRealEstateAsset(asset)">Edit</button>
                             <button class="btn btn-danger btn-sm" (click)="openDeleteModal(deleteModal, asset)">Delete</button>
                         </div>
                       </div>
@@ -63,26 +63,13 @@
     </ng-template>
 </div>
 
-<!-- Backdrop for drawer -->
-@if (showDrawer) {
-    <div class="drawer-backdrop" (click)="closeDrawer()"></div>
-}
+<app-lateral-drawer #drawer
+    [drawerTitle]="assetToEdit ? 'Modifier bien immobilier' : 'Nouveau bien immobilier'"
+    [componentToDisplay]="componentToDisplay"
+    [componentData]="componentData"
+    (drawerClosed)="closeDrawer()"
+    (formSubmitted)="onFormSubmitted($event)"
+    (formError)="onFormError($event)"
+    (formCancelled)="onFormCancelled()">
 
-<!-- Lateral Drawer form -->
-<div class="drawer" [class.drawer-open]="showDrawer">
-    <div class="drawer-header">
-        <h4 class="mb-0">{{ assetToEdit ? 'Modifier' : 'Nouveau' }} bien immobilier</h4>
-        <button type="button" class="btn-close" (click)="closeDrawer()" aria-label="Close"></button>
-    </div>
-    
-    <div class="drawer-body">
-        <!-- Form component integration -->
-        <app-real-estate-form
-            [assetToEdit]="assetToEdit"
-            [isInDrawer]="true"
-            (formSubmitted)="onFormSubmitted($event)"
-            (formError)="onFormError($event)"
-            (formCancelled)="onFormCancelled()">
-        </app-real-estate-form>
-    </div>
-</div>
+</app-lateral-drawer>

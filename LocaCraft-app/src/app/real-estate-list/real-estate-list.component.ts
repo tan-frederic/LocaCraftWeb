@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { RealEstateAsset } from '../models/real-estate-assets';
 import { RealEstateService } from '../Services/real-estate.service';
 import { RealEstateFormComponent } from '../real-estate-form/real-estate-form.component';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { LateralDrawerComponent } from '../lateral-drawer/lateral-drawer.component';
 
 @Component({
   selector: 'app-real-estate-list',
   standalone: true,
-  imports: [CommonModule, RealEstateFormComponent],
+  imports: [CommonModule, LateralDrawerComponent],
   templateUrl: './real-estate-list.component.html',
   styleUrl: './real-estate-list.component.css'
 })
@@ -23,10 +24,13 @@ export class RealEstateListComponent implements OnInit {
   errorMessage: string | null = null;
 
   // Drawer state
-  showDrawer = false;
+  componentToDisplay = RealEstateFormComponent;
+  componentData: any = { assetToEdit: null, isInDrawer: true };
   assetToEdit: RealEstateAsset | null = null;
 
   realEstate: RealEstateAsset = this.getEmptyRealEstate();
+
+  @ViewChild('drawer') drawer!: LateralDrawerComponent;
 
   constructor(private realEstateService: RealEstateService,
               private router: Router,
@@ -51,8 +55,8 @@ export class RealEstateListComponent implements OnInit {
     });
   }
 
-  editRealEstateAsset(id: number): void {
-    this.router.navigate([`details`, id]);
+  editRealEstateAsset(asset: RealEstateAsset): void {
+    this.router.navigate(['/details', asset.id]);
   }
 
   openDeleteModal(content: any, asset: RealEstateAsset) {
@@ -84,6 +88,7 @@ export class RealEstateListComponent implements OnInit {
 
   createRealEstateAsset(): void {
     this.assetToEdit = null; // Mode création
+    this.componentData = { assetToEdit: null, isInDrawer: true };
     this.openDrawer();
   }
 
@@ -104,7 +109,7 @@ export class RealEstateListComponent implements OnInit {
       this.showSuccess(`"${asset.name}" a été créé avec succès`);
     }
     
-    this.closeDrawer();
+    this.drawer.closeDrawer();
   }
 
   onFormError(errorMsg: string): void {
@@ -113,18 +118,17 @@ export class RealEstateListComponent implements OnInit {
   }
 
   onFormCancelled(): void {
-    this.closeDrawer();
+    this.drawer.closeDrawer();
   }
 
   // Drawer
 
   openDrawer(): void {
-    this.showDrawer = true;
+    this.drawer.openDrawer();
     document.body.style.overflow = 'hidden';
   }
 
   closeDrawer(): void {
-    this.showDrawer = false;
     this.assetToEdit = null;
     document.body.style.overflow = 'auto';
   }

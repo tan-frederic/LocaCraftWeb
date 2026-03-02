@@ -1,15 +1,20 @@
+import { Lessor } from "./lessor";
 import { RealEstateAsset } from "./real-estate-assets";
 import { Tenant } from "./tenant";
 
 export interface Lease{
     id: number;
     realEstateAssetId: number;
-    realEstateAsset: RealEstateAsset;
+    realEstateAsset?: RealEstateAsset;
+    lessorId: number;
+    lessor?: Lessor;
     leaseName: string;
     monthlyRent: number;
-    monthlyCharge: number;
+    monthlyCharges: number;
     deposit: number;
-    tenants: Tenant[];
+    rentIndexReference: number;
+    isOngoing: boolean;
+    tenants?: Tenant[];
     startDate: Date;
-    endDate: Date;
+    endDate: Date | null;
 }

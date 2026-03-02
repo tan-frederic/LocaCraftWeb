@@ -1,2 +1,11 @@
-<p>real-estate-details works!</p>
-<app-real-estate-form></app-real-estate-form>
+<div class="container">
+    <h2 class="text-center my-5">Real Estate Details</h2>
+    <div class="row">
+        <div class="col">
+            <app-real-estate-form></app-real-estate-form>
+        </div>
+        <div class="col">
+            <app-lease-list [realEstateAssetId]="realEstateId"></app-lease-list>
+        </div>
+    </div>
+</div>

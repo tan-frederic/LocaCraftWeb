@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RealEstateAsset } from '../models/real-estate-assets';
 import { RealEstateService } from '../Services/real-estate.service';
@@ -14,7 +14,7 @@ import { Lease } from '../models/lease';
   styleUrl: './real-estate-form.component.css'
 })
 
-export class RealEstateFormComponent implements OnInit{
+export class RealEstateFormComponent implements OnInit, OnChanges{
 
   @Input() assetToEdit: RealEstateAsset | null = null;
 
@@ -37,23 +37,38 @@ export class RealEstateFormComponent implements OnInit{
               private router: Router,
               private activatedRoute: ActivatedRoute){}
 
-  ngOnInit(): void {
-    this.activatedRoute.paramMap.subscribe((result) => {
-      const id = result.get("id");
-      if (id) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['assetToEdit']) {
+      if (this.assetToEdit) {
+        this.realEstate = { ...this.assetToEdit };
         this.isEditing = true;
-        
-        this.realEstateAssetService.getRealEstateAssetById(Number(id)).subscribe({
-          next: (result) => {
-              this.realEstate = result;
-            },
-          error: (err) => {
-            console.error("Error loading Real Estate Asset", err)
-            this.errorMessage = `Error occured (${err.status})`
-          }          
-        });
+      } else {
+        this.realEstate = this.getEmptyRealEstate();
+        this.isEditing = false;
       }
-    })
+    }
+  }
+
+  ngOnInit(): void {
+    // Only load from route if not in drawer
+    if (!this.isInDrawer) {
+      this.activatedRoute.paramMap.subscribe((result) => {
+        const id = result.get("id");
+        if (id) {
+          this.isEditing = true;
+          
+          this.realEstateAssetService.getRealEstateAssetById(Number(id)).subscribe({
+            next: (result) => {
+                this.realEstate = result;
+              },
+            error: (err) => {
+              console.error("Error loading Real Estate Asset", err)
+              this.errorMessage = `Error occured (${err.status})`
+            }          
+          });
+        }
+      });
+    }
   }
 
   onSubmit(): void {

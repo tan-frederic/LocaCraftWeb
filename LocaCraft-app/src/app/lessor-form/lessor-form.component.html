@@ -1,0 +1,74 @@
+<form (ngSubmit)="onSubmit()" #lessorForm="ngForm" class="border p-4 rounded mx-auto">
+    <div class="mb-3">
+        <label class="form-label">Name*</label>
+        <input required #name="ngModel" type="text" class="form-control" name="name" [(ngModel)]="lessor.name" />
+        @if (name.invalid && (name.touched || name.dirty)) {
+            <div>
+                @if (name.errors?.["required"]) {
+                    <div class="text-danger">Name is required</div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Address*</label>
+        <input required #address="ngModel" type="text" class="form-control" name="address" [(ngModel)]="lessor.address" />
+        @if (address.invalid && (address.touched || address.dirty)) {
+            <div>
+                @if (address.errors?.["required"]) {
+                    <div class="text-danger">Address is required</div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">City*</label>
+        <input required #city="ngModel" type="text" class="form-control" name="city" [(ngModel)]="lessor.city" />
+        @if (city.invalid && (city.touched || city.dirty)) {
+            <div>
+                @if (city.errors?.["required"]) {
+                    <div class="text-danger">City is required</div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Postal Code*</label>
+        <input required #postalCode="ngModel" type="text" class="form-control" name="postalCode" [(ngModel)]="lessor.postalCode" />
+        @if (postalCode.invalid && (postalCode.touched || postalCode.dirty)) {
+            <div>
+                @if (postalCode.errors?.["required"]) {
+                    <div class="text-danger">Postal Code is required</div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Country*</label>
+        <input required #country="ngModel" type="text" class="form-control" name="country" [(ngModel)]="lessor.country" />
+        @if (country.invalid && (country.touched || country.dirty)) {
+            <div>
+                @if (country.errors?.["required"]) {
+                    <div class="text-danger">Country is required</div>
+                }
+            </div>
+        }
+    </div>
+
+    @if (errorMessage) {
+        <div class="text-danger mb-3">{{ errorMessage }}</div>
+    }
+
+    @if (showActions) {
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-lg" [disabled]="lessorForm.invalid || isSubmitting">
+                Create
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-lg" (click)="onCancel()">Cancel</button>
+        </div>
+    }
+</form>

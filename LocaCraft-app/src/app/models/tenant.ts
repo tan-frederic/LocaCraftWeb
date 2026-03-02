@@ -3,7 +3,7 @@ import { Lease } from "./lease";
 export interface Tenant{
     id: number;
     leaseId: number;
-    lease: Lease;
+    lease?: Lease;
     name: string;
     surname: string;
     phoneNumber: string;

@@ -1,0 +1,29 @@
+<div class="container-fluid border p-3 rounded mx-auto">
+    <div class="d-flex justify-content-between align-items-center my-5">
+        <h2>Liste des baux</h2>
+        <button class="btn btn-success btn-lg" (click)="createNewLease()">
+            <span class="fs-3 me-2">+</span>
+            Nouveau bail
+        </button>
+    </div>
+    <div class="pb-5">
+        @if (leases.length === 0) {
+            <p class="text-muted">Aucun bail disponible.</p>
+        } @else {
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let lease of leases">
+                    <div class="d-flex align-items-center gap-2">
+                        <span>{{ lease.leaseName }}</span>
+                        <span class="badge" [ngClass]="lease.isOngoing ? 'bg-success' : 'bg-secondary'">
+                            {{ lease.isOngoing ? 'Ongoing' : 'Ended' }}
+                        </span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm" (click)="editLease(lease)">Edit</button>
+                        <button class="btn btn-outline-danger btn-sm" (click)="deleteLease(lease)">Delete</button>
+                    </div>
+                </li>
+            </ul>
+        }
+    </div>
+</div>

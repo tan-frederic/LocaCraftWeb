@@ -1,0 +1,205 @@
+@if (isInDrawer == false) {
+    <h2 class="text-center my-5">{{ isEditing ? 'Edit Lease' : 'New Lease' }}</h2>
+}
+
+<form (ngSubmit)="onSubmit()" #leaseForm="ngForm" class="border p-4 rounded mx-auto">
+    <div class="mb-3">
+        <label class="form-label">Lease Name*</label>
+        <input required #leaseName="ngModel" type="text" class="form-control" name="leaseName" [(ngModel)]="formData.leaseName" />
+        @if (leaseName.invalid && (leaseName.touched || leaseName.dirty)) {
+            <div>
+                @if (leaseName.errors?.["required"]) {
+                    <div class="text-danger">Lease Name is required</div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Real Estate*</label>
+        <input type="text" class="form-control" [value]="realEstateName" readonly placeholder="No real estate selected" />
+        @if (!formData.realEstateAssetId) {
+            <div class="text-danger mt-1">Real Estate is required</div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Lessor*</label>
+        <select
+            required
+            #lessorSelect="ngModel"
+            class="form-select"
+            name="lessorSelection"
+            [(ngModel)]="lessorSelection"
+            (ngModelChange)="onLessorSelectionChange($event)">
+            <option [ngValue]="null">Choose</option>
+            <option [ngValue]="'new'">New Lessor</option>
+            <option *ngFor="let lessor of lessors" [ngValue]="lessor.id">
+                {{ lessor.name }}
+            </option>
+        </select>
+        @if (lessorSelection === null && lessorSelect.dirty) {
+            <div class="text-danger mt-1">Lessor is required</div>
+        }
+    </div>
+
+    @if (lessorSelection === 'new') {
+        <div class="mb-4">
+            <app-lessor-form
+                [lessor]="newLessor"
+                [showActions]="false">
+            </app-lessor-form>
+        </div>
+    }
+
+    <div class="mb-3">
+        <label class="form-label">Monthly Rent*</label>
+        <input required #monthlyRent="ngModel" type="number" min="0" step="0.01" class="form-control" name="monthlyRent" [(ngModel)]="formData.monthlyRent" (blur)="formatAmount('monthlyRent')" />
+        @if (monthlyRent.invalid && (monthlyRent.touched || monthlyRent.dirty)) {
+            <div>
+                @if (monthlyRent.errors?.["required"]) {
+                    <div class="text-danger">Monthly Rent is required</div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Monthly Charge</label>
+        <input #monthlyCharge="ngModel" type="number" min="0" step="0.01" class="form-control" name="monthlyCharge" [(ngModel)]="formData.monthlyCharge" (blur)="formatAmount('monthlyCharge')" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Deposit</label>
+        <input #deposit="ngModel" type="number" min="0" step="0.01" class="form-control" name="deposit" [(ngModel)]="formData.deposit" (blur)="formatAmount('deposit')" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Rent Index Reference</label>
+        <input #rentIndexReference="ngModel" type="number" min="0" class="form-control" name="rentIndexReference" [(ngModel)]="formData.rentIndexReference" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Start Date*</label>
+        <input required #startDate="ngModel" type="date" class="form-control" name="startDate" [(ngModel)]="formData.startDate" />
+        @if (startDate.invalid && (startDate.touched || startDate.dirty)) {
+            <div>
+                @if (startDate.errors?.["required"]) {
+                    <div class="text-danger">Start Date is required</div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <div class="d-flex align-items-center justify-content-between">
+            <label class="form-label mb-0">End Date</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="ongoingLease" name="ongoingLease" [(ngModel)]="isOngoing" (ngModelChange)="onOngoingToggle($event)">
+                <label class="form-check-label" for="ongoingLease">Ongoing</label>
+            </div>
+        </div>
+        <input #endDate="ngModel" type="date" class="form-control" name="endDate" [(ngModel)]="formData.endDate" [disabled]="isOngoing" />
+    </div>
+
+    @if (isEditing) {
+        <div class="border rounded p-3 mb-3">
+            <h5 class="mb-3">Generate Rent Receipt</h5>
+            <div class="row g-2 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label">Receipt Month</label>
+                    <input
+                        type="month"
+                        class="form-control"
+                        [(ngModel)]="receiptMonth"
+                        [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="col-md-6 d-grid">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        (click)="generateRentReceipt()"
+                        [disabled]="!receiptMonth || isGeneratingReceipt">
+                        Generate Receipt
+                    </button>
+                </div>
+            </div>
+            @if (receiptError) {
+                <div class="text-danger mt-2">{{ receiptError }}</div>
+            }
+        </div>
+    }
+
+    @if (isEditing) {
+        <div class="border rounded p-3 mb-3">
+            <h5 class="mb-3">Tenants</h5>
+            @if (tenants.length === 0) {
+                <div class="text-muted mb-3">No tenants for this lease.</div>
+            } @else {
+                <ul class="list-group mb-3">
+                    <li class="list-group-item" *ngFor="let tenant of tenants">
+                        <div class="fw-semibold">{{ tenant.name }} {{ tenant.surname }}</div>
+                        <div class="text-muted small">{{ tenant.address }}, {{ tenant.postalCode }} {{ tenant.city }}</div>
+                    </li>
+                </ul>
+            }
+
+            <h6 class="mb-2">Add Tenant</h6>
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label class="form-label">Name*</label>
+                    <input type="text" class="form-control" [(ngModel)]="tenantForm.name" [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Surname</label>
+                    <input type="text" class="form-control" [(ngModel)]="tenantForm.surname" [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Phone</label>
+                    <input type="text" class="form-control" [(ngModel)]="tenantForm.phoneNumber" [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" [(ngModel)]="tenantForm.email" [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Address*</label>
+                    <input type="text" class="form-control" [(ngModel)]="tenantForm.address" [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">City*</label>
+                    <input type="text" class="form-control" [(ngModel)]="tenantForm.city" [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Postal Code*</label>
+                    <input type="text" class="form-control" [(ngModel)]="tenantForm.postalCode" [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Country*</label>
+                    <input type="text" class="form-control" [(ngModel)]="tenantForm.country" [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="col-12 d-grid">
+                    <button type="button" class="btn btn-outline-success" (click)="addTenant()" [disabled]="isSubmittingTenant">
+                        Add Tenant
+                    </button>
+                </div>
+            </div>
+            @if (tenantError) {
+                <div class="text-danger mt-2">{{ tenantError }}</div>
+            }
+        </div>
+    }
+
+    @if (errorMessage) {
+        <div class="text-danger mb-3">{{ errorMessage }}</div>
+    }
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary btn-lg" [disabled]="leaseForm.invalid || isSubmitting || !formData.realEstateAssetId || (!formData.lessorId && lessorSelection !== 'new') || (lessorSelection === 'new' && !isNewLessorValid())">
+            {{ isEditing ? 'Update' : 'Create' }}
+        </button>
+        @if (isInDrawer) {
+            <button type="button" class="btn btn-outline-secondary btn-lg" (click)="onCancel()">Cancel</button>
+        }
+    </div>
+</form>

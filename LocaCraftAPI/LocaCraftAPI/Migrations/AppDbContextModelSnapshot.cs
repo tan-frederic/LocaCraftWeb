@@ -26,12 +26,18 @@ namespace LocaCraftAPI.Migrations
                     b.Property<decimal>("Deposit")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("LeaseeName")
+                    b.Property<bool>("IsOngoing")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LeaseName")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("LessorId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("MonthlyCharges")
                         .HasColumnType("TEXT");
@@ -42,14 +48,19 @@ namespace LocaCraftAPI.Migrations
                     b.Property<int>("RealEstateAssetId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<double?>("RentIndexReference")
+                        .HasColumnType("REAL");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LessorId");
+
                     b.HasIndex("RealEstateAssetId");
 
-                    b.ToTable("Lease");
+                    b.ToTable("Leases");
                 });
 
             modelBuilder.Entity("LocaCraftAPI.Models.LeaseDocuments", b =>
@@ -78,6 +89,45 @@ namespace LocaCraftAPI.Migrations
                     b.HasIndex("LeaseId");
 
                     b.ToTable("LeaseDocuments");
+                });
+
+            modelBuilder.Entity("LocaCraftAPI.Models.Lessor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Lessors");
                 });
 
             modelBuilder.Entity("LocaCraftAPI.Models.RealEstateAsset", b =>
@@ -164,16 +214,24 @@ namespace LocaCraftAPI.Migrations
 
                     b.HasIndex("LeaseId");
 
-                    b.ToTable("Tenant");
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("LocaCraftAPI.Models.Lease", b =>
                 {
+                    b.HasOne("LocaCraftAPI.Models.Lessor", "Lessor")
+                        .WithMany("Leases")
+                        .HasForeignKey("LessorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("LocaCraftAPI.Models.RealEstateAsset", "RealEstateAsset")
                         .WithMany("Leases")
                         .HasForeignKey("RealEstateAssetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Lessor");
 
                     b.Navigation("RealEstateAsset");
                 });
@@ -205,6 +263,11 @@ namespace LocaCraftAPI.Migrations
                     b.Navigation("LeaseDocuments");
 
                     b.Navigation("Tenants");
+                });
+
+            modelBuilder.Entity("LocaCraftAPI.Models.Lessor", b =>
+                {
+                    b.Navigation("Leases");
                 });
 
             modelBuilder.Entity("LocaCraftAPI.Models.RealEstateAsset", b =>
