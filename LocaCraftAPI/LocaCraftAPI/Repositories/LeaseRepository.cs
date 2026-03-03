@@ -61,6 +61,10 @@ namespace LocaCraftAPI.Repositories
         /// <inheritdoc />
         public Task UpdateAsync(Lease lease)
         {
+            var tracked = _context.ChangeTracker.Entries<Lease>()
+                .FirstOrDefault(e => e.Entity.Id == lease.Id);
+            if (tracked != null)
+                tracked.State = EntityState.Detached;
             _context.Leases.Update(lease);
             return _context.SaveChangesAsync();
         }

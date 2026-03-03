@@ -53,6 +53,10 @@ namespace LocaCraftAPI.Repositories
         /// <inheritdoc />
         public async Task UpdateAsync(RealEstateAsset asset)
         {
+            var tracked = _context.ChangeTracker.Entries<RealEstateAsset>()
+                .FirstOrDefault(e => e.Entity.Id == asset.Id);
+            if (tracked != null)
+                tracked.State = EntityState.Detached;
             _context.RealEstateAssets.Update(asset);
             await _context.SaveChangesAsync();
         }

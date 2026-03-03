@@ -67,6 +67,10 @@ namespace LocaCraftAPI.Repositories
         /// <inheritdoc />
         public Task UpdateAsync(Tenant tenant)
         {
+            var tracked = _context.ChangeTracker.Entries<Tenant>()
+                .FirstOrDefault(e => e.Entity.Id == tenant.Id);
+            if (tracked != null)
+                tracked.State = EntityState.Detached;
             _context.Tenants.Update(tenant);
             return _context.SaveChangesAsync();
         }
