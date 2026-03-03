@@ -12,10 +12,12 @@ LocaCraft is a full-stack property management application. It helps track real e
 - Lease creation and management
 - Tenant and lessor management
 - INSEE index lookup (via backend service)
+- Rent receipt PDF generation (client-side, via jsPDF)
 
 ## Project Structure
 - `LocaCraft-app/` Angular frontend
-- `LocaCraftAPI/` ASP.NET Core Web API
+- `LocaCraftAPI/LocaCraftAPI/` ASP.NET Core Web API
+- `LocaCraftAPI/LocaCraftAPI.Tests/` xUnit unit tests for the API
 
 ## Setup
 
@@ -44,6 +46,21 @@ The frontend API URL is configured in:
 Default value:
 ```
 https://localhost:7195/api
+```
+
+## Testing
+
+### Run all tests with log output
+From `LocaCraftAPI/`:
+```bash
+bash run-tests.sh
+```
+Results are printed to the terminal and written to `LocaCraftAPI.Tests/TestResults/test-results.log`.
+
+### Run tests without log
+From `LocaCraftAPI/LocaCraftAPI.Tests/`:
+```bash
+dotnet test
 ```
 
 ## Notes
