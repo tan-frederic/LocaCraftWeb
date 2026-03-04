@@ -5,6 +5,7 @@ import { RealEstateDetailsComponent } from './real-estate-details/real-estate-de
 import { LeaseFormComponent } from './lease-form/lease-form.component';
 import { InseeIndexListComponent } from './insee-index-list/insee-index-list.component';
 import { LessorFormComponent } from './lessor-form/lessor-form.component';
+import { LoginFormComponent } from './login-form/login-form.component';
 
 export const routes: Routes = [
     {path: ``, component: RealEstateListComponent},
@@ -12,5 +13,6 @@ export const routes: Routes = [
     {path: `details/:id`, component: RealEstateDetailsComponent},
     {path: `lease/create`, component: LeaseFormComponent},
     {path: `insee`, component: InseeIndexListComponent},
-    {path: `lessor/create`, component: LessorFormComponent}
+    {path: `lessor/create`, component: LessorFormComponent},
+    {path: `login`, component: LoginFormComponent}
 ];

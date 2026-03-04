@@ -1,0 +1,98 @@
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+  <div class="card shadow-sm p-4" style="width: 100%; max-width: 420px;">
+    <h2 class="card-title text-center mb-4">
+      {{ isLoginMode ? 'Connexion' : 'Créer un compte' }}
+    </h2>
+
+    <form (ngSubmit)="onSubmit()" #authForm="ngForm">
+      <div class="mb-3">
+        <label class="form-label">Adresse e-mail *</label>
+        <input
+          required
+          email
+          #emailInput="ngModel"
+          type="email"
+          class="form-control"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="exemple@email.com"
+        />
+        @if (emailInput.invalid && (emailInput.touched || emailInput.dirty)) {
+          <div class="text-danger small mt-1">
+            @if (emailInput.errors?.['required']) { L'adresse e-mail est requise. }
+            @else if (emailInput.errors?.['email']) { Adresse e-mail invalide. }
+          </div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Mot de passe *</label>
+        <input
+          required
+          minlength="6"
+          #passwordInput="ngModel"
+          type="password"
+          class="form-control"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="••••••••"
+        />
+        @if (passwordInput.invalid && (passwordInput.touched || passwordInput.dirty)) {
+          <div class="text-danger small mt-1">
+            @if (passwordInput.errors?.['required']) { Le mot de passe est requis. }
+            @else if (passwordInput.errors?.['minlength']) { Le mot de passe doit contenir au moins 6 caractères. }
+          </div>
+        }
+      </div>
+
+      @if (!isLoginMode) {
+        <div class="mb-3">
+          <label class="form-label">Confirmer le mot de passe *</label>
+          <input
+            required
+            #confirmInput="ngModel"
+            type="password"
+            class="form-control"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            placeholder="••••••••"
+          />
+          @if (confirmInput.invalid && (confirmInput.touched || confirmInput.dirty)) {
+            <div class="text-danger small mt-1">La confirmation est requise.</div>
+          }
+        </div>
+      }
+
+      @if (errorMessage) {
+        <div class="alert alert-danger py-2 small">{{ errorMessage }}</div>
+      }
+
+      @if (successMessage) {
+        <div class="alert alert-success py-2 small">{{ successMessage }}</div>
+      }
+
+      <button
+        type="submit"
+        class="btn btn-primary w-100 mb-3"
+        [disabled]="authForm.invalid || isSubmitting"
+      >
+        @if (isSubmitting) {
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+        }
+        {{ isLoginMode ? 'Se connecter' : 'Créer le compte' }}
+      </button>
+    </form>
+
+    <hr />
+
+    <p class="text-center mb-0 small">
+      @if (isLoginMode) {
+        Pas encore de compte ?
+        <a href="#" (click)="$event.preventDefault(); toggleMode()">S'inscrire</a>
+      } @else {
+        Déjà un compte ?
+        <a href="#" (click)="$event.preventDefault(); toggleMode()">Se connecter</a>
+      }
+    </p>
+  </div>
+</div>
