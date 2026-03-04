@@ -1,7 +1,11 @@
 using LocaCraftAPI.LocaCraftAPI.Data;
 using LocaCraftAPI.Repositories;
 using LocaCraftAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace LocaCraftAPI
 {
@@ -10,13 +14,16 @@ namespace LocaCraftAPI
         public static void Main(string[] args)
         {
             const string corsName = "LocalDebugCors";
-            const string databaseName = "Data Source=app.db";
 
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<AppDbContext>( options =>
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseSqlite(databaseName);
+                if (!string.IsNullOrEmpty(connectionString))
+                    options.UseNpgsql(connectionString);
+                else
+                    options.UseSqlite("Data Source=app.db");
             });
 
             builder.Services.AddCors(options =>
@@ -42,12 +49,46 @@ namespace LocaCraftAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddIdentityCore<AppUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
+
+            var jwtConfig = builder.Configuration.GetSection("Jwt");
+            if (string.IsNullOrEmpty(jwtConfig["Key"]))
+                throw new InvalidOperationException(
+                    "JWT key is not configured. Set 'Jwt:Key' in appsettings.Development.json or via environment variable 'Jwt__Key'.");
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtConfig["Issuer"],
+                        ValidAudience = jwtConfig["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtConfig["Key"]!))
+                    };
+                });
+
+            builder.Services.AddAuthorization();
+
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                db.Database.Migrate();
+                if (db.Database.IsRelational() && db.Database.ProviderName!.Contains("Npgsql"))
+                    db.Database.Migrate();
+                else
+                    db.Database.EnsureCreated();
+
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                if (!roleManager.RoleExistsAsync("User").GetAwaiter().GetResult())
+                    roleManager.CreateAsync(new IdentityRole("User")).GetAwaiter().GetResult();
             }
 
             if (app.Environment.IsDevelopment())
@@ -62,7 +103,13 @@ namespace LocaCraftAPI
 
             app.UseCors(corsName);
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.MapControllers();
+
+            RegisterUser.MapEndPoint(app);
+            LoginUser.MapEndPoint(app);
 
             app.Run();
         }
