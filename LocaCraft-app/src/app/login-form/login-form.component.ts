@@ -22,7 +22,14 @@ export class LoginFormComponent {
   successMessage = '';
   isSubmitting = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  showPassword = false;
+  showConfirmPassword = false;
+
+  constructor(private authService: AuthService, private router: Router) {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home']);
+    }
+  }
 
   toggleMode(): void {
     this.isLoginMode = !this.isLoginMode;
@@ -50,7 +57,7 @@ export class LoginFormComponent {
       this.authService.login({ email: this.email, password: this.password }).subscribe({
         next: () => {
           this.isSubmitting = false;
-          this.router.navigate(['/']);
+          this.router.navigate(['/home']);
         },
         error: (err) => {
           this.isSubmitting = false;
