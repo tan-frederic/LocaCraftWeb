@@ -19,6 +19,17 @@
           <a class="nav-link active" routerLink="/lessor/create">New Lessor</a>
         </li>
       </ul>
+      <ul class="navbar-nav ms-auto">
+        @if (isLoggedIn) {
+          <li class="nav-item">
+            <button class="btn btn-outline-danger" (click)="logout()">Déconnexion</button>
+          </li>
+        } @else {
+          <li class="nav-item">
+            <a class="btn btn-outline-primary" routerLink="/login">Connexion</a>
+          </li>
+        }
+      </ul>
     </div>
   </div>
 </nav>

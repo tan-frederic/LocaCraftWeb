@@ -4,6 +4,7 @@ using LocaCraftAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -23,7 +24,8 @@ namespace LocaCraftAPI
                 if (!string.IsNullOrEmpty(connectionString))
                     options.UseNpgsql(connectionString);
                 else
-                    options.UseSqlite("Data Source=app.db");
+                    options.UseSqlite("Data Source=app.db")
+                           .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
             });
 
             builder.Services.AddCors(options =>
@@ -84,10 +86,7 @@ namespace LocaCraftAPI
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                if (db.Database.IsRelational() && db.Database.ProviderName!.Contains("Npgsql"))
-                    db.Database.Migrate();
-                else
-                    db.Database.EnsureCreated();
+                db.Database.Migrate();
 
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 if (!roleManager.RoleExistsAsync("User").GetAwaiter().GetResult())

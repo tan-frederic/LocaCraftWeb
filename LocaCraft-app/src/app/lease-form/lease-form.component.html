@@ -35,7 +35,7 @@
             <option [ngValue]="null">Choose</option>
             <option [ngValue]="'new'">New Lessor</option>
             <option *ngFor="let lessor of lessors" [ngValue]="lessor.id">
-                {{ lessor.name }}
+                {{ lessor.firstName }} {{ lessor.lastName }}
             </option>
         </select>
         @if (lessorSelection === null && lessorSelect.dirty) {
@@ -55,8 +55,8 @@
     @if (selectedLessor) {
         <div class="mb-4 border rounded p-3">
             <div class="mb-2">
-                <label class="form-label text-muted small mb-0">Name</label>
-                <input type="text" class="form-control-plaintext fw-semibold pt-0" [value]="selectedLessor.name" readonly />
+                <label class="form-label text-muted small mb-0">Prénom / Nom</label>
+                <input type="text" class="form-control-plaintext fw-semibold pt-0" [value]="selectedLessor.firstName + ' ' + selectedLessor.lastName" readonly />
             </div>
             <div class="mb-2">
                 <label class="form-label text-muted small mb-0">Address</label>

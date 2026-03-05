@@ -51,7 +51,8 @@ export class LessorFormComponent {
   private getEmptyLessor(): Lessor {
     return {
       id: 0,
-      name: '',
+      firstName: '',
+      lastName: '',
       address: '',
       city: '',
       postalCode: '',
