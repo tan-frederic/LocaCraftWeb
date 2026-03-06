@@ -7,15 +7,15 @@ namespace LocaCraftAPI.Services
     {
         const string defaultRole = "User";
 
-        public record struct Request(string Email, string Password);
+        public record struct RegisterRequest(string Email, string Password);
 
         public static void MapEndPoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("api/register", (Request request, AppDbContext dbContext, UserManager<AppUser> userManager) =>
+            app.MapPost("api/register", (RegisterRequest request, AppDbContext dbContext, UserManager<AppUser> userManager) =>
                 Handle(request, dbContext, userManager));
         }
 
-        public static async Task<IResult> Handle(Request request, AppDbContext dbContext, UserManager<AppUser> userManager)
+        public static async Task<IResult> Handle(RegisterRequest request, AppDbContext dbContext, UserManager<AppUser> userManager)
         {
             using var transaction = await dbContext.Database.BeginTransactionAsync();
 
