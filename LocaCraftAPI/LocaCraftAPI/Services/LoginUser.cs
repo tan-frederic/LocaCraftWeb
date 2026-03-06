@@ -9,15 +9,15 @@ namespace LocaCraftAPI.Services
 {
     public class LoginUser
     {
-        public record struct Request(string Email, string Password);
+        public record struct LoginRequest(string Email, string Password);
 
         public static void MapEndPoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("api/login", (Request request, UserManager<AppUser> userManager, IConfiguration configuration) =>
+            app.MapPost("api/login", (LoginRequest request, UserManager<AppUser> userManager, IConfiguration configuration) =>
                 Handle(request, userManager, configuration));
         }
 
-        public static async Task<IResult> Handle(Request request, UserManager<AppUser> userManager, IConfiguration configuration)
+        public static async Task<IResult> Handle(LoginRequest request, UserManager<AppUser> userManager, IConfiguration configuration)
         {
             var user = await userManager.FindByEmailAsync(request.Email);
             if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
