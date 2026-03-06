@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-ARG API_URL=http://localhost:7195/api
+ARG API_URL=http://localhost:8080/api
 
 COPY package*.json ./
 RUN npm ci
