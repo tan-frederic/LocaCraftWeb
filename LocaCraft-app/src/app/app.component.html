@@ -1,13 +1,13 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/">LocaCraft</a>
+    <a class="navbar-brand" routerLink="/home">LocaCraft</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link active" routerLink="/">Real Estate</a>
+          <a class="nav-link active" routerLink="/home">Real Estate</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" routerLink="/create">Add Real Estate</a>
@@ -18,6 +18,17 @@
         <li class="nav-item">
           <a class="nav-link active" routerLink="/lessor/create">New Lessor</a>
         </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        @if (isLoggedIn) {
+          <li class="nav-item">
+            <button class="btn btn-outline-danger" (click)="logout()">Déconnexion</button>
+          </li>
+        } @else {
+          <li class="nav-item">
+            <a class="btn btn-outline-primary" routerLink="/login">Connexion</a>
+          </li>
+        }
       </ul>
     </div>
   </div>
