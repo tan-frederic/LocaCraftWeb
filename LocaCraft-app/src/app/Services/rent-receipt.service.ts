@@ -41,7 +41,7 @@ export class RentReceiptService {
 
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${data.lessor.name}`, marginLeft, 20);
+    doc.text(`${data.lessor.firstName} ${data.lessor.lastName}`, marginLeft, 20);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
@@ -154,7 +154,7 @@ export class RentReceiptService {
 
     // ── Nom du bailleur en bas ─────────────────────────────
     doc.setFont('helvetica', 'bold');
-    doc.text(data.lessor.name, marginLeft, afterTable + 15);
+    doc.text(`${data.lessor.firstName} ${data.lessor.lastName}`, marginLeft, afterTable + 15);
 
     // ── Téléchargement ─────────────────────────────────────
     const nomFichier = this.genererNomFichier(data);

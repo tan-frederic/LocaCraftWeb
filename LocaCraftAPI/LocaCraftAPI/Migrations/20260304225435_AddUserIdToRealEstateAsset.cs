@@ -5,25 +5,25 @@
 namespace LocaCraftAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddLeaseRentIndexReference : Migration
+    public partial class AddUserIdToRealEstateAsset : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<float>(
-                name: "RentIndexReference",
-                table: "Leases",
-                type: "REAL",
+            migrationBuilder.AddColumn<string>(
+                name: "UserId",
+                table: "RealEstateAssets",
+                type: "text",
                 nullable: false,
-                defaultValue: 0f);
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "RentIndexReference",
-                table: "Leases");
+                name: "UserId",
+                table: "RealEstateAssets");
         }
     }
 }

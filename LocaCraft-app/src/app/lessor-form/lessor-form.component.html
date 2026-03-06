@@ -1,11 +1,23 @@
 <form (ngSubmit)="onSubmit()" #lessorForm="ngForm" class="border p-4 rounded mx-auto">
     <div class="mb-3">
-        <label class="form-label">Name*</label>
-        <input required #name="ngModel" type="text" class="form-control" name="name" [(ngModel)]="lessor.name" />
-        @if (name.invalid && (name.touched || name.dirty)) {
+        <label class="form-label">Prénom*</label>
+        <input required #firstName="ngModel" type="text" class="form-control" name="firstName" [(ngModel)]="lessor.firstName" />
+        @if (firstName.invalid && (firstName.touched || firstName.dirty)) {
             <div>
-                @if (name.errors?.["required"]) {
-                    <div class="text-danger">Name is required</div>
+                @if (firstName.errors?.["required"]) {
+                    <div class="text-danger">Le prénom est requis</div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nom*</label>
+        <input required #lastName="ngModel" type="text" class="form-control" name="lastName" [(ngModel)]="lessor.lastName" />
+        @if (lastName.invalid && (lastName.touched || lastName.dirty)) {
+            <div>
+                @if (lastName.errors?.["required"]) {
+                    <div class="text-danger">Le nom est requis</div>
                 }
             </div>
         }
