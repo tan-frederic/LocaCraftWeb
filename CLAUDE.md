@@ -55,7 +55,7 @@ The API base URL expected by the frontend is configured in `LocaCraft-app/src/en
 
 **Pattern**: Standalone Angular components + injectable services per entity
 
-- `src/app/Services/` — one service per entity (`real-estate.service.ts`, `lease.service.ts`, `tenant.service.ts`, `lessor.service.ts`, `rent-receipt.service.ts`, `insee-index.service.ts`), each wraps `HttpClient` calls to the API
+- `src/app/Services/` — one service per entity (`real-estate.service.ts`, `lease-service.ts`, `tenant.service.ts`, `lessor.service.ts`, `rent-receipt.service.ts`, `insee-index.service.ts`), each wraps `HttpClient` calls to the API
 - `src/app/models/` — TypeScript interfaces mirroring backend models
 - Each feature area has its own folder (e.g., `real-estate-list/`, `lease-form/`, `tenant-form/`)
 - `lateral-drawer/` — reusable slide-in panel that dynamically loads any standalone component via `ViewContainerRef.createComponent()`. It bridges the host's `@Output` events (`formSubmitted`, `formError`, `formCancelled`) by subscribing to the embedded component's matching outputs
@@ -76,3 +76,49 @@ The API base URL expected by the frontend is configured in `LocaCraft-app/src/en
 ### LateralDrawer pattern
 
 Forms embedded in the drawer must expose `@Output() formSubmitted`, `@Output() formError`, and `@Output() formCancelled` EventEmitters so the drawer can relay events to the host component. The host passes data to the drawer via `componentData` (an object whose keys are assigned directly onto the embedded component instance).
+
+## Linear Workflow
+
+When asked to create a Linear issue, always execute the following three steps automatically without asking for confirmation.
+
+### Step 1 — Create the Linear issue
+- Create the issue with the provided title and description
+- Retrieve the generated identifier (e.g. `LC-12`)
+
+### Step 2 — Create a GitHub branch
+- Base branch: `dev_env`
+- Naming convention: `feature/<TitleInUpperCamelCase>`
+- Example: `feature/AddTenantForm`
+- Keep the branch name concise: truncate the title at 5 words maximum
+
+### Step 2b — Créer un commit vide
+- Après la création de la branche, créer un commit vide sur cette branche
+- Message du commit : `chore: init <TitleInUpperCamelCase>`
+- Commande : `git commit --allow-empty -m "chore: init <TitleInUpperCamelCase>"`
+
+### Step 3 — Create a draft Pull Request
+- Title: `Titre de l'issue`
+- Target branch: `dev_env`
+- Status: **draft**
+- PR body template:
+  ```
+  ## Description
+  <!-- Décris les changements apportés -->
+
+  ## Issue Linear
+  <lien vers l'issue Linear>
+
+  ## Type de changement
+  - [ ] Bug fix
+  - [ ] Nouvelle fonctionnalité
+  - [ ] Refactoring
+  - [ ] Documentation
+  ```
+
+### Confirmation summary
+Once all three steps are done, print a short summary:
+```
+✅ Issue créée   : <titre>
+✅ Branche       : feature/<slug>
+✅ Draft PR      : #<numéro> → dev
+```
