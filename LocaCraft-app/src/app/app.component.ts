@@ -12,11 +12,20 @@ import { AuthService } from './Services/auth.service';
 })
 export class AppComponent {
   title = 'LocaCraft-app';
+  accountMenuOpen = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
+  }
+
+  toggleAccountMenu(): void {
+    this.accountMenuOpen = !this.accountMenuOpen;
+  }
+
+  closeAccountMenu(): void {
+    this.accountMenuOpen = false;
   }
 
   logout(): void {
