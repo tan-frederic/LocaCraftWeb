@@ -1,1 +1,150 @@
-<p>user-account-settings works!</p>
+<div class="settings-page">
+  <h1 class="settings-title">Paramètres du compte</h1>
+
+  <!-- Photo de profil -->
+  <div class="settings-card">
+    <h2 class="settings-card-title">Photo de profil</h2>
+    <div class="profile-picture-section">
+      <div class="avatar-wrapper">
+        @if (currentProfilePicture) {
+          <img [src]="profilePictureSrc" alt="Photo de profil" class="avatar-img" />
+        } @else {
+          <div class="avatar-placeholder">
+            {{ currentEmail ? currentEmail[0].toUpperCase() : '?' }}
+          </div>
+        }
+      </div>
+      <div class="avatar-actions">
+        <label class="btn-upload" [class.disabled]="isUpdatingPicture">
+          @if (isUpdatingPicture) {
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+          }
+          Changer la photo
+          <input type="file" accept="image/*" (change)="onProfilePictureSelected($event)" hidden />
+        </label>
+        <p class="upload-hint">JPG, PNG ou GIF. Taille recommandée : 200×200 px.</p>
+      </div>
+    </div>
+    @if (pictureError) {
+      <div class="alert alert-danger py-2 small mt-3">{{ pictureError }}</div>
+    }
+    @if (pictureSuccess) {
+      <div class="alert alert-success py-2 small mt-3">{{ pictureSuccess }}</div>
+    }
+  </div>
+
+  <!-- Adresse e-mail -->
+  <div class="settings-card">
+    <h2 class="settings-card-title">Adresse e-mail</h2>
+    <p class="current-value">Adresse actuelle : <strong>{{ currentEmail }}</strong></p>
+    <form (ngSubmit)="onChangeEmail()" #emailForm="ngForm">
+      <div class="mb-3">
+        <label class="form-label">Nouvelle adresse e-mail *</label>
+        <input
+          required
+          email
+          #newEmailInput="ngModel"
+          type="email"
+          class="form-control"
+          name="newEmail"
+          [(ngModel)]="newEmail"
+          placeholder="nouvelle@adresse.com"
+        />
+        @if (newEmailInput.invalid && (newEmailInput.touched || newEmailInput.dirty)) {
+          <div class="text-danger small mt-1">
+            @if (newEmailInput.errors?.['required']) { L'adresse e-mail est requise. }
+            @else if (newEmailInput.errors?.['email']) { Adresse e-mail invalide. }
+          </div>
+        }
+      </div>
+      @if (emailError) {
+        <div class="alert alert-danger py-2 small">{{ emailError }}</div>
+      }
+      @if (emailSuccess) {
+        <div class="alert alert-success py-2 small">{{ emailSuccess }}</div>
+      }
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="emailForm.invalid || isChangingEmail"
+      >
+        @if (isChangingEmail) {
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+        }
+        Mettre à jour l'e-mail
+      </button>
+    </form>
+  </div>
+
+  <!-- Mot de passe -->
+  <div class="settings-card">
+    <h2 class="settings-card-title">Mot de passe</h2>
+    <form (ngSubmit)="onChangePassword()" #passwordForm="ngForm">
+      <div class="mb-3">
+        <label class="form-label">Mot de passe actuel *</label>
+        <input
+          required
+          #currentPwdInput="ngModel"
+          type="password"
+          class="form-control"
+          name="currentPassword"
+          [(ngModel)]="currentPassword"
+          placeholder="••••••••"
+        />
+        @if (currentPwdInput.invalid && (currentPwdInput.touched || currentPwdInput.dirty)) {
+          <div class="text-danger small mt-1">Le mot de passe actuel est requis.</div>
+        }
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Nouveau mot de passe *</label>
+        <input
+          required
+          minlength="6"
+          #newPwdInput="ngModel"
+          type="password"
+          class="form-control"
+          name="newPassword"
+          [(ngModel)]="newPassword"
+          placeholder="••••••••"
+        />
+        @if (newPwdInput.invalid && (newPwdInput.touched || newPwdInput.dirty)) {
+          <div class="text-danger small mt-1">
+            @if (newPwdInput.errors?.['required']) { Le nouveau mot de passe est requis. }
+            @else if (newPwdInput.errors?.['minlength']) { Minimum 6 caractères. }
+          </div>
+        }
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Confirmer le nouveau mot de passe *</label>
+        <input
+          required
+          #confirmPwdInput="ngModel"
+          type="password"
+          class="form-control"
+          name="confirmNewPassword"
+          [(ngModel)]="confirmNewPassword"
+          placeholder="••••••••"
+        />
+        @if (confirmPwdInput.invalid && (confirmPwdInput.touched || confirmPwdInput.dirty)) {
+          <div class="text-danger small mt-1">La confirmation est requise.</div>
+        }
+      </div>
+      @if (passwordError) {
+        <div class="alert alert-danger py-2 small">{{ passwordError }}</div>
+      }
+      @if (passwordSuccess) {
+        <div class="alert alert-success py-2 small">{{ passwordSuccess }}</div>
+      }
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="passwordForm.invalid || isChangingPassword"
+      >
+        @if (isChangingPassword) {
+          <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+        }
+        Changer le mot de passe
+      </button>
+    </form>
+  </div>
+</div>
