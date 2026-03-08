@@ -5,24 +5,18 @@
 namespace LocaCraftAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class FixNameLease : Migration
+    public partial class UpdateBdd : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "LeaseeName",
-                table: "Leases",
-                newName: "LeaseName");
+
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "LeaseName",
-                table: "Leases",
-                newName: "LeaseeName");
+
         }
     }
 }

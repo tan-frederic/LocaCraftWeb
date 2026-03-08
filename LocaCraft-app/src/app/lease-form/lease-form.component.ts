@@ -163,7 +163,8 @@ export class LeaseFormComponent implements OnChanges, OnInit {
   private getEmptyLessor(): Lessor {
     return {
       id: 0,
-      name: '',
+      firstName: '',
+      lastName: '',
       address: '',
       city: '',
       postalCode: '',
@@ -446,7 +447,8 @@ export class LeaseFormComponent implements OnChanges, OnInit {
 
   isNewLessorValid(): boolean {
     return Boolean(
-      this.newLessor.name?.trim() &&
+      this.newLessor.firstName?.trim() &&
+      this.newLessor.lastName?.trim() &&
       this.newLessor.address?.trim() &&
       this.newLessor.city?.trim() &&
       this.newLessor.postalCode?.trim() &&

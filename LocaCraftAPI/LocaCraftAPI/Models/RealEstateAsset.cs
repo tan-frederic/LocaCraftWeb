@@ -23,5 +23,7 @@ namespace LocaCraftAPI.Models
         [Required]
         public string Country { get; set; } = string.Empty;
         public List<Lease> Leases { get; set; } = new List<Lease>();
+
+        public string UserId { get; set; } = string.Empty;
     }
 }

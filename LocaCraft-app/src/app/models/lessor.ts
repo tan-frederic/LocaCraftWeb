@@ -2,7 +2,8 @@ import { Lease } from "./lease";
 
 export interface Lessor{
     id: number;
-    name: string;
+    firstName: string;
+    lastName: string;
     address: string;
     city: string;
     postalCode: string;

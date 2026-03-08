@@ -5,15 +5,20 @@
 namespace LocaCraftAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCityOnLessorData : Migration
+    public partial class postgreBdd : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Country",
+            migrationBuilder.RenameColumn(
+                name: "Name",
                 table: "Lessors",
-                type: "TEXT",
+                newName: "LastName");
+
+            migrationBuilder.AddColumn<string>(
+                name: "FirstName",
+                table: "Lessors",
+                type: "text",
                 nullable: false,
                 defaultValue: "");
         }
@@ -22,8 +27,13 @@ namespace LocaCraftAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Country",
+                name: "FirstName",
                 table: "Lessors");
+
+            migrationBuilder.RenameColumn(
+                name: "LastName",
+                table: "Lessors",
+                newName: "Name");
         }
     }
 }

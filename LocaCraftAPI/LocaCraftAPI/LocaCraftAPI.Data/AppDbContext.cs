@@ -1,9 +1,10 @@
 ﻿using LocaCraftAPI.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace LocaCraftAPI.LocaCraftAPI.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public DbSet<RealEstateAsset> RealEstateAssets { get; set; }
 
@@ -19,5 +20,6 @@ namespace LocaCraftAPI.LocaCraftAPI.Data
             : base(options)
         {
         }
+
     }
 }
