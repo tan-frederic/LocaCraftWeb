@@ -9,6 +9,59 @@ on:
       - 'push_front_prod_*'
 
 jobs:
+
+  # -----------------------------------------------
+  # TESTS API
+  # -----------------------------------------------
+  test-api:
+    if: startsWith(github.ref_name, 'push_api_')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ startsWith(github.ref_name, 'push_api_dev_') && 'dev' || 'main' }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore ./LocaCraftAPI/LocaCraftAPI.csproj
+
+      - name: Run tests
+        run: dotnet test ./LocaCraftAPI.Tests/LocaCraftAPI.Tests.csproj --verbosity normal
+
+  # -----------------------------------------------
+  # TESTS FRONT
+  # -----------------------------------------------
+  test-front:
+    if: startsWith(github.ref_name, 'push_front_')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ startsWith(github.ref_name, 'push_front_dev_') && 'dev' || 'main' }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./LocaCraftFront
+
+      - name: Run tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        working-directory: ./LocaCraftFront
+
+
+  # -----------------------------------------------
+  # DEPLOY API DEV
+  # -----------------------------------------------
   deploy-api-dev:
     if: startsWith(github.ref_name, 'push_api_dev_')
     runs-on: ubuntu-latest
@@ -26,6 +79,10 @@ jobs:
             git pull origin dev_env
             docker compose -f docker-compose.dev.yml up -d --build api
 
+
+  # -----------------------------------------------
+  # DEPLOY API PROD
+  # -----------------------------------------------
   deploy-api-prod:
     if: startsWith(github.ref_name, 'push_api_prod_')
     runs-on: ubuntu-latest
@@ -43,6 +100,10 @@ jobs:
             git pull origin main
             docker compose -f docker-compose.prod.yml up -d --build api
 
+
+  # -----------------------------------------------
+  # DEPLOY FRONT DEV
+  # -----------------------------------------------
   deploy-front-dev:
     if: startsWith(github.ref_name, 'push_front_dev_')
     runs-on: ubuntu-latest
@@ -60,6 +121,9 @@ jobs:
             git pull origin dev_env
             docker compose -f docker-compose.dev.yml up -d --build front
 
+  # -----------------------------------------------
+  # DEPLOY FRONT PROD
+  # -----------------------------------------------
   deploy-front-prod:
     if: startsWith(github.ref_name, 'push_front_prod_')
     runs-on: ubuntu-latest
@@ -76,3 +140,19 @@ jobs:
             git checkout main
             git pull origin main
             docker compose -f docker-compose.prod.yml up -d --build front
+
+```
+
+## Le flux avec les tests
+```
+git push tag push_api_prod_...
+          |
+     [test-api] ← checkout main, dotnet test
+          |
+    ✅ passent ?
+     /         \
+   OUI          NON
+    |             |
+[deploy-api-prod] ❌ deploy bloqué
+    |
+VPS prod mis à jour ✅
