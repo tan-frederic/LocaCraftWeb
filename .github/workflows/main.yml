@@ -73,10 +73,13 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
+            docker network create locacraft-dev 2>/dev/null || true
+            docker network create locacraft-prod 2>/dev/null || true
             cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
-            docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build api-dev nginx
+            docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build api-dev
+            docker compose -f docker-compose.nginx.yml up -d
 
   # -----------------------------------------------
   # DEPLOY API PROD
@@ -94,10 +97,13 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
+            docker network create locacraft-dev 2>/dev/null || true
+            docker network create locacraft-prod 2>/dev/null || true
             cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
-            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build api-prod nginx
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build api-prod
+            docker compose -f docker-compose.nginx.yml up -d
 
   # -----------------------------------------------
   # DEPLOY FRONT DEV
@@ -115,10 +121,13 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
+            docker network create locacraft-dev 2>/dev/null || true
+            docker network create locacraft-prod 2>/dev/null || true
             cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
-            docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build front-dev nginx
+            docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build front-dev
+            docker compose -f docker-compose.nginx.yml up -d
 
   # -----------------------------------------------
   # DEPLOY FRONT PROD
@@ -136,7 +145,10 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
+            docker network create locacraft-dev 2>/dev/null || true
+            docker network create locacraft-prod 2>/dev/null || true
             cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
-            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build front-prod nginx
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build front-prod
+            docker compose -f docker-compose.nginx.yml up -d
