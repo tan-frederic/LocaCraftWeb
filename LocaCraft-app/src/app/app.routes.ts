@@ -6,6 +6,7 @@ import { LeaseFormComponent } from './lease-form/lease-form.component';
 import { InseeIndexListComponent } from './insee-index-list/insee-index-list.component';
 import { LessorFormComponent } from './lessor-form/lessor-form.component';
 import { LoginFormComponent } from './login-form/login-form.component';
+import { UserAccountSettingsComponent } from './user-account-settings/user-account-settings.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -16,5 +17,6 @@ export const routes: Routes = [
     {path: 'lease/create', component: LeaseFormComponent, canActivate: [authGuard]},
     {path: 'insee', component: InseeIndexListComponent, canActivate: [authGuard]},
     {path: 'lessor/create', component: LessorFormComponent, canActivate: [authGuard]},
+    {path: 'account/settings', component: UserAccountSettingsComponent, canActivate: [authGuard]},
     {path: 'login', component: LoginFormComponent}
 ];

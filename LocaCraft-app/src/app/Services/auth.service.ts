@@ -18,6 +18,11 @@ export interface LoginResponse {
   expiration: string;
 }
 
+export interface UserProfile {
+  email: string;
+  profilePictureBase64: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -46,5 +51,21 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+  }
+
+  getMe(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${environment.apiUrl}/account/me`);
+  }
+
+  changeEmail(newEmail: string): Observable<void> {
+    return this.http.patch<void>(`${environment.apiUrl}/account/email`, { newEmail });
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.patch<void>(`${environment.apiUrl}/account/password`, { currentPassword, newPassword });
+  }
+
+  updateProfilePicture(profilePictureBase64: string): Observable<void> {
+    return this.http.patch<void>(`${environment.apiUrl}/account/profile-picture`, { profilePictureBase64 });
   }
 }
