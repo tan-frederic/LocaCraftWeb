@@ -13,7 +13,7 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
+  api-dev:
     build:
       context: .
       dockerfile: LocaCraftAPI/Dockerfile
@@ -33,26 +33,26 @@ services:
       context: ../LocaCraft-app
       dockerfile: Dockerfile
       args:
-        API_URL: /api
+        API_URL: /api-dev
     depends_on:
-      - api
+      - api-dev
 
   nginx:
     build:
       context: ../nginx
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - certbot-certs:/etc/letsencrypt
-      - certbot-www:/var/www/certbot
+      - ../nginx/nginx.dev.conf:/etc/nginx/conf.d/default.conf
+      - certbot-certs-dev:/etc/letsencrypt
+      - certbot-www-dev:/var/www/certbot
     depends_on:
-      - api
+      - api-dev
       - front-dev
 
 volumes:
-  certbot-certs:
-  certbot-www:
-  postgres_data:
+  postgres_data_dev:
+  certbot-certs-dev:
+  certbot-www-dev:

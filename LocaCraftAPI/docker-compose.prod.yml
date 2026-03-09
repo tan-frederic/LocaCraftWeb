@@ -13,7 +13,7 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
+  api-prod:
     build:
       context: .
       dockerfile: LocaCraftAPI/Dockerfile
@@ -33,12 +33,11 @@ services:
       context: ../LocaCraft-app
       dockerfile: Dockerfile
       args:
-        API_URL: /api
+        API_URL: /api-prod
     depends_on:
-      - api
+      - api-prod
 
   nginx:
-    image: nginx:alpine
     build:
       context: ../nginx
       dockerfile: Dockerfile
@@ -46,24 +45,14 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - certbot-certs:/etc/letsencrypt
-      - certbot-www:/var/www/certbot
+      - ../nginx/nginx.prod.conf:/etc/nginx/conf.d/default.conf
+      - certbot-certs_prod:/etc/letsencrypt
+      - certbot-www_prod:/var/www/certbot
     depends_on:
-      - api
+      - api-prod
       - front-prod
 
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - certbot-certs:/etc/letsencrypt
-      - certbot-www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot
-      -d api.locacraft.fr
-      -d app.locacraft.fr
-      -d dev.locacraft.fr
-
 volumes:
-  certbot-certs:
-  certbot-www:
-  postgres_data:
+  postgres_data_prod:
+  certbot-certs_prod:
+  certbot-www_prod:
