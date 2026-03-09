@@ -37,7 +37,9 @@ namespace LocaCraftAPI.Controllers
             var result = await _userManager.SetEmailAsync(user, request.NewEmail);
             if (!result.Succeeded) return BadRequest(result.Errors);
 
-            await _userManager.SetUserNameAsync(user, request.NewEmail);
+            var usernameResult = await _userManager.SetUserNameAsync(user, request.NewEmail);
+            if (!usernameResult.Succeeded) return BadRequest(usernameResult.Errors);
+
             return Ok();
         }
 
