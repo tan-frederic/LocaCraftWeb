@@ -72,7 +72,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /home/user/LocaCraftAPI
+            cd /home/user/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
             docker compose -f docker-compose.dev.yml up -d --build api
@@ -92,7 +92,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /home/user/LocaCraftAPI
+            cd /home/user/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
             docker compose -f docker-compose.prod.yml up -d --build api
@@ -112,7 +112,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /home/user/LocaCraftAPI
+            cd /home/user/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
             docker compose -f docker-compose.dev.yml up -d --build front
@@ -132,7 +132,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /home/user/LocaCraftAPI
+            cd /home/user/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
             docker compose -f docker-compose.prod.yml up -d --build front
