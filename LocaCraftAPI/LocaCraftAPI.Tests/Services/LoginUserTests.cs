@@ -43,7 +43,7 @@ public class LoginUserTests
         _userManagerMock.Setup(m => m.GetRolesAsync(user)).ReturnsAsync(new List<string> { "User" });
 
         var result = await LoginUser.Handle(
-            new LoginUser.Request("user@test.com", "Password1!"),
+            new LoginUser.LoginRequest("user@test.com", "Password1!"),
             _userManagerMock.Object, _config);
 
         var statusResult = Assert.IsAssignableFrom<IStatusCodeHttpResult>(result);
@@ -80,7 +80,7 @@ public class LoginUserTests
         _userManagerMock.Setup(m => m.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((AppUser?)null);
 
         var result = await LoginUser.Handle(
-            new LoginUser.Request("unknown@test.com", "Password1!"),
+            new LoginUser.LoginRequest("unknown@test.com", "Password1!"),
             _userManagerMock.Object, _config);
 
         var statusResult = Assert.IsAssignableFrom<IStatusCodeHttpResult>(result);
@@ -95,7 +95,7 @@ public class LoginUserTests
         _userManagerMock.Setup(m => m.CheckPasswordAsync(user, It.IsAny<string>())).ReturnsAsync(false);
 
         var result = await LoginUser.Handle(
-            new LoginUser.Request("user@test.com", "WrongPassword!"),
+            new LoginUser.LoginRequest("user@test.com", "WrongPassword!"),
             _userManagerMock.Object, _config);
 
         var statusResult = Assert.IsAssignableFrom<IStatusCodeHttpResult>(result);

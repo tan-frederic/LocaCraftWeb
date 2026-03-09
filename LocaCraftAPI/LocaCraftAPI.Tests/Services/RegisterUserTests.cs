@@ -49,7 +49,7 @@ public class RegisterUserTests : IDisposable
             .ReturnsAsync(IdentityResult.Success);
 
         var result = await RegisterUser.Handle(
-            new RegisterUser.Request("user@test.com", "Password1!"),
+            new RegisterUser.RegisterRequest("user@test.com", "Password1!"),
             _db, _userManagerMock.Object);
 
         var statusResult = Assert.IsAssignableFrom<IStatusCodeHttpResult>(result);
@@ -65,7 +65,7 @@ public class RegisterUserTests : IDisposable
             .ReturnsAsync(IdentityResult.Failed(errors));
 
         var result = await RegisterUser.Handle(
-            new RegisterUser.Request("user@test.com", "Password1!"),
+            new RegisterUser.RegisterRequest("user@test.com", "Password1!"),
             _db, _userManagerMock.Object);
 
         var statusResult = Assert.IsAssignableFrom<IStatusCodeHttpResult>(result);
@@ -84,7 +84,7 @@ public class RegisterUserTests : IDisposable
             .ReturnsAsync(IdentityResult.Failed(errors));
 
         var result = await RegisterUser.Handle(
-            new RegisterUser.Request("user@test.com", "Password1!"),
+            new RegisterUser.RegisterRequest("user@test.com", "Password1!"),
             _db, _userManagerMock.Object);
 
         var statusResult = Assert.IsAssignableFrom<IStatusCodeHttpResult>(result);

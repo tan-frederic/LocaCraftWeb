@@ -11,7 +11,7 @@ The API base URL is configured in:
 
 Default value:
 ```
-https://localhost:7195/api
+https://localhost:8080/api
 ```
 
 ## Angular CLI

@@ -18,6 +18,30 @@
         </a>
       </li>
     </ul>
+
+    <div class="sidebar-account">
+      @if (isLoggedIn) {
+        @if (accountMenuOpen) {
+          <div class="account-backdrop" (click)="closeAccountMenu()"></div>
+          <div class="account-menu">
+            <a class="account-menu-item" routerLink="/account/settings" (click)="closeAccountMenu()">
+              Paramètres du compte
+            </a>
+            <button class="account-menu-item account-menu-item--danger" (click)="logout()">
+              Se déconnecter
+            </button>
+          </div>
+        }
+        <button class="account-btn" (click)="toggleAccountMenu()">
+          <span class="account-btn-icon">&#9998;</span>
+          Account
+        </button>
+      } @else {
+        <a class="account-btn" routerLink="/login">
+          Se connecter
+        </a>
+      }
+    </div>
   </nav>
 
   <main class="main-content">

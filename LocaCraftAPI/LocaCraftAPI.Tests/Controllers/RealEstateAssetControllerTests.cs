@@ -1,25 +1,38 @@
 using LocaCraftAPI.Controllers;
 using LocaCraftAPI.Models;
 using LocaCraftAPI.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.Security.Claims;
 using Xunit;
 
 namespace LocaCraftAPI.Tests.Controllers;
 
 public class RealEstateAssetControllerTests
 {
+    private const string FakeUserId = "test-user-id";
+
     private readonly Mock<IRealEstateAssetRepository> _repoMock = new();
     private readonly RealEstateAssetController _controller;
 
     public RealEstateAssetControllerTests()
     {
         _controller = new RealEstateAssetController(_repoMock.Object);
+
+        var user = new ClaimsPrincipal(new ClaimsIdentity(
+            new[] { new Claim(ClaimTypes.NameIdentifier, FakeUserId) }, "TestAuth"));
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = user }
+        };
     }
 
     private static RealEstateAsset MakeAsset(int id = 1) => new()
     {
         Id = id,
+        UserId = FakeUserId,
         Name = "Test Asset",
         Address = "1 rue de la Paix",
         PostalCode = "75001",
@@ -31,7 +44,7 @@ public class RealEstateAssetControllerTests
     public async Task GetAllRealEstateAsset_ReturnsOkWithList()
     {
         var assets = new List<RealEstateAsset> { MakeAsset() };
-        _repoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(assets);
+        _repoMock.Setup(r => r.GetAllAsync(FakeUserId)).ReturnsAsync(assets);
 
         var result = await _controller.GetAllRealEstateAsset();
 
