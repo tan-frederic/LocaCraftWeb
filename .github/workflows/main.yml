@@ -73,7 +73,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /home/user/LocaCraftWeb/LocaCraftAPI
+            cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
             docker compose -f docker-compose.dev.yml up -d --build api
@@ -94,7 +94,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /home/user/LocaCraftWeb/LocaCraftAPI
+            cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
             docker compose -f docker-compose.prod.yml up -d --build api
@@ -115,7 +115,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /home/user/LocaCraftWeb/LocaCraftAPI
+            cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
             docker compose -f docker-compose.dev.yml up -d --build front
@@ -136,7 +136,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /home/user/LocaCraftWeb/LocaCraftAPI
+            cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
             docker compose -f docker-compose.prod.yml up -d --build front
