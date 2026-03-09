@@ -38,7 +38,6 @@ services:
       - api
 
   nginx:
-    image: nginx:alpine
     build:
       context: ../nginx
       dockerfile: Dockerfile
@@ -52,16 +51,6 @@ services:
     depends_on:
       - api
       - front-dev
-
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - certbot-certs:/etc/letsencrypt
-      - certbot-www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot
-      -d api.locacraft.fr
-      -d app.locacraft.fr
-      -d dev.locacraft.fr
 
 volumes:
   certbot-certs:
