@@ -5,12 +5,18 @@ import { RealEstateDetailsComponent } from './real-estate-details/real-estate-de
 import { LeaseFormComponent } from './lease-form/lease-form.component';
 import { InseeIndexListComponent } from './insee-index-list/insee-index-list.component';
 import { LessorFormComponent } from './lessor-form/lessor-form.component';
+import { LoginFormComponent } from './login-form/login-form.component';
+import { UserAccountSettingsComponent } from './user-account-settings/user-account-settings.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-    {path: ``, component: RealEstateListComponent},
-    {path: `create`, component: RealEstateFormComponent},
-    {path: `details/:id`, component: RealEstateDetailsComponent},
-    {path: `lease/create`, component: LeaseFormComponent},
-    {path: `insee`, component: InseeIndexListComponent},
-    {path: `lessor/create`, component: LessorFormComponent}
+    {path: '', redirectTo: 'home', pathMatch: 'full'},
+    {path: 'home', component: RealEstateListComponent, canActivate: [authGuard]},
+    {path: 'create', component: RealEstateFormComponent, canActivate: [authGuard]},
+    {path: 'details/:id', component: RealEstateDetailsComponent, canActivate: [authGuard]},
+    {path: 'lease/create', component: LeaseFormComponent, canActivate: [authGuard]},
+    {path: 'insee', component: InseeIndexListComponent, canActivate: [authGuard]},
+    {path: 'lessor/create', component: LessorFormComponent, canActivate: [authGuard]},
+    {path: 'account/settings', component: UserAccountSettingsComponent, canActivate: [authGuard]},
+    {path: 'login', component: LoginFormComponent}
 ];

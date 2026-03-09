@@ -8,9 +8,9 @@ namespace LocaCraftAPI.Repositories
     public interface IRealEstateAssetRepository
     {
         /// <summary>
-        /// Returns all assets.
+        /// Returns all assets belonging to the specified user.
         /// </summary>
-        public Task<IEnumerable<RealEstateAsset>> GetAllAsync();
+        public Task<IEnumerable<RealEstateAsset>> GetAllAsync(string userId);
         /// <summary>
         /// Returns an asset by id or null if not found.
         /// </summary>
