@@ -76,7 +76,7 @@ jobs:
             cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
-            docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build api-dev
+            docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build api-dev nginx
 
   # -----------------------------------------------
   # DEPLOY API PROD
@@ -97,7 +97,7 @@ jobs:
             cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
-            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build api-prod
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build api-prod nginx
 
   # -----------------------------------------------
   # DEPLOY FRONT DEV
@@ -118,7 +118,7 @@ jobs:
             cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
-            docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build front-dev
+            docker compose -f docker-compose.dev.yml --env-file .env.dev up -d --build front-dev nginx
 
   # -----------------------------------------------
   # DEPLOY FRONT PROD
@@ -139,4 +139,4 @@ jobs:
             cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb/LocaCraftAPI
             git fetch --tags origin
             git checkout ${{ github.sha }}
-            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build front-prod
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build front-prod nginx
