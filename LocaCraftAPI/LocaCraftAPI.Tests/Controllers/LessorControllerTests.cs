@@ -20,7 +20,8 @@ public class LessorControllerTests
     private static Lessor MakeLessor(int id = 1) => new()
     {
         Id = id,
-        Name = "Jean Dupont",
+        FirstName = "Jean",
+        LastName = "Dupont",
         Address = "1 rue de la Paix",
         City = "Paris",
         PostalCode = "75001",

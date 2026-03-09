@@ -31,7 +31,7 @@ public class RealEstateAssetControllerTests
     public async Task GetAllRealEstateAsset_ReturnsOkWithList()
     {
         var assets = new List<RealEstateAsset> { MakeAsset() };
-        _repoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(assets);
+        _repoMock.Setup(r => r.GetAllAsync(It.IsAny<string>())).ReturnsAsync(assets);
 
         var result = await _controller.GetAllRealEstateAsset();
 
