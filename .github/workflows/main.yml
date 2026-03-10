@@ -87,9 +87,8 @@ jobs:
               up -d --build api-dev
 
             # Reload Nginx sans reconstruire (le certificat est déjà là)
-            docker compose -f nginx/docker-compose.nginx.yml \
-              exec nginx nginx -s reload 2>/dev/null \
-              || docker compose -f nginx/docker-compose.nginx.yml up -d --build
+            docker compose -f nginx/docker-compose.nginx.yml exec nginx nginx -s reload 2>/dev/null \
+            || (docker compose -f nginx/docker-compose.nginx.yml up -d --build; true)
 
   # -----------------------------------------------
   # DEPLOY API PROD
@@ -118,9 +117,8 @@ jobs:
             docker compose -f LocaCraftAPI/docker-compose.prod.yml --env-file LocaCraftAPI/.env.prod \
               up -d --build api-prod
 
-            docker compose -f nginx/docker-compose.nginx.yml \
-              exec nginx nginx -s reload 2>/dev/null \
-              || docker compose -f nginx/docker-compose.nginx.yml up -d --build
+            docker compose -f nginx/docker-compose.nginx.yml exec nginx nginx -s reload 2>/dev/null \
+            || (docker compose -f nginx/docker-compose.nginx.yml up -d --build; true)
 
   # -----------------------------------------------
   # DEPLOY FRONT DEV
@@ -149,9 +147,8 @@ jobs:
             docker compose -f LocaCraftAPI/docker-compose.dev.yml --env-file LocaCraftAPI/.env.dev \
               up -d --build front-dev
 
-            docker compose -f nginx/docker-compose.nginx.yml \
-              exec nginx nginx -s reload 2>/dev/null \
-              || docker compose -f nginx/docker-compose.nginx.yml up -d --build
+            docker compose -f nginx/docker-compose.nginx.yml exec nginx nginx -s reload 2>/dev/null \
+            || (docker compose -f nginx/docker-compose.nginx.yml up -d --build; true)
 
   # -----------------------------------------------
   # DEPLOY FRONT PROD
@@ -180,6 +177,5 @@ jobs:
             docker compose -f LocaCraftAPI/docker-compose.prod.yml --env-file LocaCraftAPI/.env.prod \
               up -d --build front-prod
 
-            docker compose -f nginx/docker-compose.nginx.yml \
-              exec nginx nginx -s reload 2>/dev/null \
-              || docker compose -f nginx/docker-compose.nginx.yml up -d --build
+            docker compose -f nginx/docker-compose.nginx.yml exec nginx nginx -s reload 2>/dev/null \
+            || (docker compose -f nginx/docker-compose.nginx.yml up -d --build; true)

@@ -9,24 +9,25 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    depends_on:
-      certbot-init:
-        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost/ || exit 1"]
+      interval: 3s
+      timeout: 2s
+      retries: 15
+      start_period: 5s
     networks:
       - locacraft-dev
       - locacraft-prod
     restart: unless-stopped
 
-  # ── Première demande de certificat ──────────────────────────────────────────
-  # Ce service tourne UNE SEULE FOIS au premier déploiement, puis s'arrête.
-  # Nginx doit être déjà démarré en mode bootstrap (port 80) pour que le
-  # challenge HTTP-01 fonctionne — l'entrypoint.sh s'en charge.
   certbot-init:
     image: certbot/certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    # Tous les sous-domaines dans une seule commande = un seul certificat SAN
+    depends_on:
+      nginx:
+        condition: service_healthy
     command: >
       certonly --webroot -w /var/www/certbot
       --cert-name api.locacraft.fr
@@ -42,9 +43,6 @@ services:
       - locacraft-dev
       - locacraft-prod
 
-  # ── Renouvellement automatique toutes les 12h ────────────────────────────────
-  # Tourne en permanence en arrière-plan.
-  # `certbot renew` ne fait rien si le certificat a encore plus de 30j de validité.
   certbot-renew:
     image: certbot/certbot
     volumes:
@@ -52,16 +50,12 @@ services:
       - ./certbot/www:/var/www/certbot
     entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done'
     depends_on:
-      certbot-init:
-        condition: service_completed_successfully
+      nginx:
+        condition: service_healthy
     networks:
       - locacraft-dev
       - locacraft-prod
     restart: unless-stopped
-
-volumes:
-  certbot-certs:
-  certbot-www:
 
 networks:
   locacraft-dev:
