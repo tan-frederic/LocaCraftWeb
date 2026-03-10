@@ -8,11 +8,13 @@ LocaCraft is a full-stack property management application. It helps track real e
 - Database: SQLite (local file `app.db`)
 
 ## Main Features
+- User authentication (register / login / JWT)
 - Real estate asset catalog
 - Lease creation and management
 - Tenant and lessor management
 - INSEE index lookup (via backend service)
 - Rent receipt PDF generation (client-side, via jsPDF)
+- Account settings (email, password, profile picture)
 
 ## Project Structure
 - `LocaCraft-app/` Angular frontend
@@ -50,18 +52,37 @@ https://localhost:7195/api
 
 ## Testing
 
-### Run all tests with log output
-From `LocaCraftAPI/`:
+### Backend — xUnit
+
+Run all tests with log output from `LocaCraftAPI/`:
 ```bash
 bash run-tests.sh
 ```
 Results are printed to the terminal and written to `LocaCraftAPI.Tests/TestResults/test-results.log`.
 
-### Run tests without log
-From `LocaCraftAPI/LocaCraftAPI.Tests/`:
+Run without log from `LocaCraftAPI/LocaCraftAPI.Tests/`:
 ```bash
 dotnet test
 ```
+
+### Frontend — Karma / Jasmine
+
+Run the full test suite (headless) from `LocaCraft-app/`:
+```bash
+ng test --watch=false --browsers=ChromeHeadless
+```
+
+Run a single spec file:
+```bash
+ng test --include=src/app/some.component.spec.ts --watch=false --browsers=ChromeHeadless
+```
+
+Watch mode (re-runs on file changes):
+```bash
+ng test
+```
+
+**Coverage:** 128 unit tests across all Angular components and services.
 
 ## Notes
 - The API uses SQLite and auto-runs migrations at startup.
