@@ -11,11 +11,11 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/ || exit 1"]
-      interval: 3s
-      timeout: 2s
-      retries: 15
-      start_period: 5s
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/.well-known/acme-challenge/ || true"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks:
       - locacraft-dev
       - locacraft-prod
@@ -32,7 +32,6 @@ services:
     command: >
       certonly --webroot -w /var/www/certbot
       --cert-name api.locacraft.fr
-      -d locacraft.fr
       -d api.locacraft.fr
       -d app.locacraft.fr
       -d apidev.locacraft.fr
