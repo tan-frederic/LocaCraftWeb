@@ -163,6 +163,8 @@ docker-compose.override.yml
 .env.development.local
 .env.test.local
 .env.production.local
+.env.dev
+.env.prod
 
 # Application settings (à adapter selon vos besoins)
 appsettings.Development.json

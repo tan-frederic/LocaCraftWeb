@@ -1,0 +1,64 @@
+services:
+
+  nginx:
+    build:
+      context: ../nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/.well-known/acme-challenge/ || true"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - locacraft-dev
+      - locacraft-prod
+    restart: unless-stopped
+
+  certbot-init:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      nginx:
+        condition: service_healthy
+    command: >
+      certonly --webroot -w /var/www/certbot
+      --cert-name api.locacraft.fr
+      -d api.locacraft.fr
+      -d app.locacraft.fr
+      -d apidev.locacraft.fr
+      -d dev.locacraft.fr
+      --email tanfrederic33@gmail.com
+      --agree-tos --no-eff-email
+      --keep-until-expiring
+    networks:
+      - locacraft-dev
+      - locacraft-prod
+
+  certbot-renew:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done'
+    depends_on:
+      nginx:
+        condition: service_healthy
+    networks:
+      - locacraft-dev
+      - locacraft-prod
+    restart: unless-stopped
+
+networks:
+  locacraft-dev:
+    external: true
+  locacraft-prod:
+    external: true

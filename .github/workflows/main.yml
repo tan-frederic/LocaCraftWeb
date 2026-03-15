@@ -71,11 +71,24 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /home/user/LocaCraftWeb/LocaCraftAPI
-            git fetch --tags origin
-            git checkout ${{ github.sha }}
-            docker compose -f docker-compose.dev.yml up -d --build api
+            docker network create locacraft-dev 2>/dev/null || true
+            docker network create locacraft-prod 2>/dev/null || true
+
+            cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb
+
+            # Mise à jour propre du code
+            git fetch origin
+            git reset --hard ${{ github.sha }}
+
+            # Rebuild et redémarrage du seul service concerné
+            docker compose -f LocaCraftAPI/docker-compose.dev.yml --env-file LocaCraftAPI/.env.dev \
+              up -d --build api-dev
+
+            # Reload Nginx sans reconstruire (le certificat est déjà là)
+            docker compose -f nginx/docker-compose.nginx.yml exec nginx nginx -s reload 2>/dev/null \
+            || (docker compose -f nginx/docker-compose.nginx.yml up -d --build; true)
 
   # -----------------------------------------------
   # DEPLOY API PROD
@@ -91,11 +104,21 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /home/user/LocaCraftWeb/LocaCraftAPI
-            git fetch --tags origin
-            git checkout ${{ github.sha }}
-            docker compose -f docker-compose.prod.yml up -d --build api
+            docker network create locacraft-dev 2>/dev/null || true
+            docker network create locacraft-prod 2>/dev/null || true
+
+            cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb
+
+            git fetch origin
+            git reset --hard ${{ github.sha }}
+
+            docker compose -f LocaCraftAPI/docker-compose.prod.yml --env-file LocaCraftAPI/.env.prod \
+              up -d --build api-prod
+
+            docker compose -f nginx/docker-compose.nginx.yml exec nginx nginx -s reload 2>/dev/null \
+            || (docker compose -f nginx/docker-compose.nginx.yml up -d --build; true)
 
   # -----------------------------------------------
   # DEPLOY FRONT DEV
@@ -111,11 +134,21 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /home/user/LocaCraftWeb/LocaCraftAPI
-            git fetch --tags origin
-            git checkout ${{ github.sha }}
-            docker compose -f docker-compose.dev.yml up -d --build front
+            docker network create locacraft-dev 2>/dev/null || true
+            docker network create locacraft-prod 2>/dev/null || true
+
+            cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb
+
+            git fetch origin
+            git reset --hard ${{ github.sha }}
+
+            docker compose -f LocaCraftAPI/docker-compose.dev.yml --env-file LocaCraftAPI/.env.dev \
+              up -d --build front-dev
+
+            docker compose -f nginx/docker-compose.nginx.yml exec nginx nginx -s reload 2>/dev/null \
+            || (docker compose -f nginx/docker-compose.nginx.yml up -d --build; true)
 
   # -----------------------------------------------
   # DEPLOY FRONT PROD
@@ -131,8 +164,18 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /home/user/LocaCraftWeb/LocaCraftAPI
-            git fetch --tags origin
-            git checkout ${{ github.sha }}
-            docker compose -f docker-compose.prod.yml up -d --build front
+            docker network create locacraft-dev 2>/dev/null || true
+            docker network create locacraft-prod 2>/dev/null || true
+
+            cd /home/${{ secrets.VPS_USER }}/LocaCraftWeb
+
+            git fetch origin
+            git reset --hard ${{ github.sha }}
+
+            docker compose -f LocaCraftAPI/docker-compose.prod.yml --env-file LocaCraftAPI/.env.prod \
+              up -d --build front-prod
+
+            docker compose -f nginx/docker-compose.nginx.yml exec nginx nginx -s reload 2>/dev/null \
+            || (docker compose -f nginx/docker-compose.nginx.yml up -d --build; true)

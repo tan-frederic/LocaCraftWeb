@@ -6,19 +6,17 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-locacraft}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-locacraft}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  api:
+  api-prod:
     build:
       context: .
       dockerfile: LocaCraftAPI/Dockerfile
-    ports:
-      - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -30,16 +28,19 @@ services:
       Jwt__Audience: LocaCraftApp
       Jwt__ExpirationInMinutes: 60
 
-  front:
+  front-prod:
     build:
       context: ../LocaCraft-app
       dockerfile: Dockerfile
       args:
-        API_URL: ${API_URL}
-    ports:
-      - "80:80"
+        API_URL: /api-prod
     depends_on:
-      - api
+      - api-prod
 
 volumes:
-  postgres_data:
+  postgres_data_prod:
+
+networks:
+  default:
+    name: locacraft-prod
+    external: true
