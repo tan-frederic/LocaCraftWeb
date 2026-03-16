@@ -56,7 +56,7 @@ namespace LocaCraftAPI.Controllers
 
             LessorMapper.ApplyUpdate(dto, existingLessor);
             await _lessorRepository.UpdateAsync(existingLessor);
-            return Ok(existingLessor);
+            return Ok(LessorMapper.ToResponseDTO(existingLessor));
         }
 
         [HttpDelete("{id}")]
