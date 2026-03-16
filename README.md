@@ -5,7 +5,7 @@ LocaCraft is a full-stack property management application. It helps track real e
 ## Tech Stack
 - Frontend: Angular 18 + Bootstrap
 - Backend: ASP.NET Core (.NET 10) + EF Core
-- Database: SQLite (local file `app.db`)
+- Database: PostgreSQL
 
 ## Main Features
 - Real estate asset catalog
