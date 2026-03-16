@@ -32,7 +32,7 @@ namespace LocaCraftAPI.DTOs.Lessor
                 Country = lessor.Country,
                 Phone = lessor.Phone,
                 Email = lessor.Email,
-                Leases = lessor.Leases.Select(lease => new LeaseSummaryDTO
+                Leases = lessor.Leases?.Select(lease => new LeaseSummaryDTO
                 {
                     Id = lease.Id,
                     LeaseName = lease.LeaseName,
@@ -42,7 +42,7 @@ namespace LocaCraftAPI.DTOs.Lessor
                     Deposit = lease.Deposit,
                     StartDate = lease.StartDate,
                     EndDate = lease.EndDate
-                }).ToList()
+                }).ToList() ?? []
             };
         }
 

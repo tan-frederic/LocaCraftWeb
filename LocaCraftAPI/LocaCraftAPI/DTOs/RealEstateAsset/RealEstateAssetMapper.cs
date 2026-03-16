@@ -30,7 +30,7 @@ namespace LocaCraftAPI.DTOs.RealEstateAsset
                 PostalCode = asset.PostalCode,
                 City = asset.City,
                 Country = asset.Country,
-                Leases = asset.Leases.Select(lease => new LeaseSummaryDTO
+                Leases = asset.Leases?.Select(lease => new LeaseSummaryDTO
                 {
                     Id = lease.Id,
                     LeaseName = lease.LeaseName,
@@ -40,7 +40,7 @@ namespace LocaCraftAPI.DTOs.RealEstateAsset
                     IsOngoing = lease.IsOngoing,
                     StartDate = lease.StartDate,
                     EndDate = lease.EndDate
-                }).ToList()
+                }).ToList() ?? []
             };
         }
 

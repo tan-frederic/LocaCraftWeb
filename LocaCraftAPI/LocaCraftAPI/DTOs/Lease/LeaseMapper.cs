@@ -37,14 +37,14 @@
                 IsOngoing = lease.IsOngoing,
                 StartDate = lease.StartDate,
                 EndDate = lease.EndDate,
-                Tenants = lease.Tenants.Select(t => new TenantSummaryDto
+                Tenants = lease.Tenants?.Select(t => new TenantSummaryDto
                 {
                     Id = t.Id,
                     Name = t.Name,
                     Surname = t.Surname,
                     Email = t.Email,
                     PhoneNumber = t.PhoneNumber
-                }).ToList()
+                }).ToList() ?? []
             };
         }
         
