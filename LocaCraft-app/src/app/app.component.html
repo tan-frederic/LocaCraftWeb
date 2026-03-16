@@ -4,6 +4,11 @@
     <ul class="sidebar-nav">
       <li>
         <a class="sidebar-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          Tableau de bord
+        </a>
+      </li>
+      <li>
+        <a class="sidebar-link" routerLink="/properties" routerLinkActive="active">
           Biens immobiliers
         </a>
       </li>
@@ -34,7 +39,7 @@
         }
         <button class="account-btn" (click)="toggleAccountMenu()">
           <span class="account-btn-icon">&#9998;</span>
-          Account
+          Mon compte
         </button>
       } @else {
         <a class="account-btn" routerLink="/login">
