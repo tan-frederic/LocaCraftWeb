@@ -32,13 +32,18 @@ namespace LocaCraftAPI.Repositories
         /// <inheritdoc />
         public async Task<IEnumerable<RealEstateAsset>> GetAllAsync(string userId)
         {
-            return await _context.RealEstateAssets.Where(r => r.UserId == userId).ToListAsync();
+            return await _context.RealEstateAssets
+                .Include(r => r.Leases)
+                .Where(r => r.UserId == userId)
+                .ToListAsync();
         }
 
         /// <inheritdoc />
         public async Task<RealEstateAsset?> GetByIdAsync(int id)
         {
-            return await _context.RealEstateAssets.FindAsync(id);
+            return await _context.RealEstateAssets
+                .Include(r => r.Leases)
+                .FirstOrDefaultAsync(r => r.Id == id);
         }
 
         /// <inheritdoc />
