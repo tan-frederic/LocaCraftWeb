@@ -19,6 +19,7 @@ namespace LocaCraftAPI.DTOs.Lease
         [Range(0, double.MaxValue)]
         public decimal Deposit { get; set; }
 
+        [Range(0, double.MaxValue)]
         public double? RentIndexReference { get; set; }
 
         public bool IsOngoing { get; set; }
