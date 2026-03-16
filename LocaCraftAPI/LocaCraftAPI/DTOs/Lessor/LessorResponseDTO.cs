@@ -1,4 +1,7 @@
-﻿namespace LocaCraftAPI.DTOs.Lessor
+﻿using LocaCraftAPI.DTOs.Lease;
+using System.ComponentModel.DataAnnotations;
+
+namespace LocaCraftAPI.DTOs.Lessor
 {
     public class LessorResponseDTO
     {
@@ -10,18 +13,8 @@
         public string PostalCode { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
-        public List<LeaseSummaryDto> Leases { get; set; } = new();
-    }
-
-    public class LeaseSummaryDto
-    {
-        public int Id { get; set; }
-        public string LeaseName { get; set; } = string.Empty;
-        public decimal MonthlyRent { get; set; }
-        public decimal MonthlyCharges { get; set; }
-        public decimal Deposit { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public List<LeaseSummaryDTO> Leases { get; set; } = new();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace LocaCraftAPI.DTOs.RealEstateAsset
+﻿using LocaCraftAPI.DTOs.Lease;
+
+namespace LocaCraftAPI.DTOs.RealEstateAsset
 {
     public static class RealEstateAssetMapper
     {
@@ -12,8 +14,7 @@
                 AddressComplement = dto.AddressComplement,
                 PostalCode = dto.PostalCode,
                 City = dto.City,
-                Country = dto.Country,
-                UserId = dto.UserId
+                Country = dto.Country
             };
         }
 
@@ -52,7 +53,6 @@
             asset.PostalCode = dto.PostalCode;
             asset.City = dto.City;
             asset.Country = dto.Country;
-            asset.UserId = dto.UserId;
         }
     }
 }

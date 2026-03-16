@@ -10,7 +10,7 @@ namespace LocaCraftAPI.DTOs.Lessor
         [Required]
         public string LastName { get; set; } = string.Empty;
 
-        [Required]
+        [Required, EmailAddress]
         public string Address { get; set; } = string.Empty;
 
         [Required]

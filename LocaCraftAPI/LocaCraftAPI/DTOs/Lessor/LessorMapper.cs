@@ -1,4 +1,6 @@
-﻿namespace LocaCraftAPI.DTOs.Lessor
+﻿using LocaCraftAPI.DTOs.Lease;
+
+namespace LocaCraftAPI.DTOs.Lessor
 {
     public static class LessorMapper
     {
@@ -30,15 +32,16 @@
                 Country = lessor.Country,
                 Phone = lessor.Phone,
                 Email = lessor.Email,
-                Leases = lessor.Leases.Select(l => new LeaseSummaryDto
+                Leases = lessor.Leases.Select(lease => new LeaseSummaryDTO
                 {
-                    Id = l.Id,
-                    LeaseName = l.LeaseName,
-                    MonthlyRent = l.MonthlyRent,
-                    MonthlyCharges = l.MonthlyCharges,
-                    Deposit = l.Deposit,
-                    StartDate = l.StartDate,
-                    EndDate = l.EndDate
+                    Id = lease.Id,
+                    LeaseName = lease.LeaseName,
+                    MonthlyRent = lease.MonthlyRent,
+                    MonthlyCharges = lease.MonthlyCharges,
+                    IsOngoing = lease.IsOngoing,
+                    Deposit = lease.Deposit,
+                    StartDate = lease.StartDate,
+                    EndDate = lease.EndDate
                 }).ToList()
             };
         }

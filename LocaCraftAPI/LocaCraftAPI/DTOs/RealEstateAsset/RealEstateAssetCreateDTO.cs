@@ -16,8 +16,5 @@ namespace LocaCraftAPI.DTOs.RealEstateAsset
         public string City { get; set; } = string.Empty;
         [Required]
         public string Country { get; set; } = string.Empty;
-
-        [Required]
-        public string UserId { get; set; } = string.Empty;
     }
 }
