@@ -1,4 +1,5 @@
-﻿using LocaCraftAPI.Models;
+﻿using LocaCraftAPI.DTOs.Lessor;
+using LocaCraftAPI.Models;
 using LocaCraftAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,38 +21,42 @@ namespace LocaCraftAPI.Controllers
         #endregion
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Lessor>>> GetAllLessors()
+        public async Task<ActionResult<IEnumerable<LessorResponseDTO>>> GetAllLessors()
         {
             var lessors = await _lessorRepository.GetAllAsync();
-            return Ok(lessors);
+            var dtos = lessors.Select(LessorMapper.ToResponseDTO);
+            return Ok(dtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Lessor>> GetLessorById(int id)
+        public async Task<ActionResult<LessorResponseDTO>> GetLessorById(int id)
         {
             var lessor = await _lessorRepository.GetByIdAsync(id);
             if (lessor == null)
                 return NotFound();
-            return Ok(lessor);
+            return Ok(LessorMapper.ToResponseDTO(lessor));
         }
 
         [HttpPost]
-        public async Task<ActionResult<Lessor>> CreateLessor(Lessor lessor)
+        public async Task<ActionResult<LessorResponseDTO>> CreateLessor(LessorCreateDTO dto)
         {
+            var lessor = LessorMapper.ToEntity(dto);
             await _lessorRepository.CreateAsync(lessor);
-            return CreatedAtAction(nameof(GetLessorById), new { id = lessor.Id }, lessor);
+
+            var responseDto = LessorMapper.ToResponseDTO(lessor);
+            return CreatedAtAction(nameof(GetLessorById), new { id = responseDto.Id }, responseDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Lessor>> UpdateLessor(int id, Lessor lessor)
+        public async Task<ActionResult<LessorResponseDTO>> UpdateLessor(int id, LessorCreateDTO dto)
         {
-            if (id != lessor.Id)
-                return BadRequest();
             var existingLessor = await _lessorRepository.GetByIdAsync(id);
             if (existingLessor == null)
                 return NotFound();
-            await _lessorRepository.UpdateAsync(lessor);
-            return Ok(lessor);
+
+            LessorMapper.ApplyUpdate(dto, existingLessor);
+            await _lessorRepository.UpdateAsync(existingLessor);
+            return Ok(existingLessor);
         }
 
         [HttpDelete("{id}")]
