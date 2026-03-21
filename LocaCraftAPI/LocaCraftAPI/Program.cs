@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 using System.Text;
 
 namespace LocaCraftAPI
@@ -49,10 +50,6 @@ namespace LocaCraftAPI
             builder.Services.AddControllers();
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.CustomSchemaIds(type => type.FullName);
-            });
 
             builder.Services.AddIdentityCore<AppUser>()
                 .AddRoles<IdentityRole>()
@@ -81,6 +78,10 @@ namespace LocaCraftAPI
 
             builder.Services.AddAuthorization();
 
+            // Add OpenAPI/Swagger support
+            // Learn more about configuring OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddOpenApi();
+
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
@@ -95,11 +96,11 @@ namespace LocaCraftAPI
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(config =>
+                app.MapOpenApi();
+                app.MapScalarApiReference("/docs", options =>
                 {
-                    config.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-                    config.RoutePrefix = string.Empty;
+                    options.Title ="LocaCraft API Reference";
+                    options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);                  
                 });
             }
 
@@ -109,6 +110,9 @@ namespace LocaCraftAPI
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.MapGet("/", () => Results.Redirect("/docs/v1"));
+            app.MapGet("/index.html", () => Results.Redirect("/docs/v1"));
 
             RegisterUser.MapEndPoint(app);
             LoginUser.MapEndPoint(app);
