@@ -116,8 +116,8 @@ namespace LocaCraftAPI
                     options.Title ="LocaCraft API Reference";
                     options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);                  
                 });
-                app.MapGet("/", () => Results.Redirect("/docs/v1"));
-                app.MapGet("/index.html", () => Results.Redirect("/docs/v1"));
+                app.MapGet("/", () => Results.Redirect("/docs/v1")).ExcludeFromDescription();
+                app.MapGet("/index.html", () => Results.Redirect("/docs/v1")).ExcludeFromDescription();
             }
 
             app.UseCors(corsName);
