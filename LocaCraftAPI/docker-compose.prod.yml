@@ -27,6 +27,7 @@ services:
       Jwt__Issuer: LocaCraftAPI
       Jwt__Audience: LocaCraftApp
       Jwt__ExpirationInMinutes: 60
+      TRUST_PROXY: "true"
 
   front-prod:
     build:

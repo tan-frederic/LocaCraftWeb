@@ -82,9 +82,9 @@ namespace LocaCraftAPI
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-                if (!builder.Environment.IsDevelopment())
+                if (builder.Configuration.GetValue<bool>("TRUST_PROXY"))
                 {
-                    // In production the container is only reachable by nginx, so trust any proxy.
+                    // Container is only reachable by nginx (not publicly exposed), so trust any proxy.
                     options.KnownNetworks.Clear();
                     options.KnownProxies.Clear();
                 }
