@@ -33,12 +33,16 @@ namespace LocaCraftAPI.Repositories
 
         public async Task<IEnumerable<Lessor>> GetAllAsync()
         {
-            return await _context.Lessors.ToListAsync();
+            return await _context.Lessors
+                .Include(l => l.Leases).
+                ToListAsync();
         }
 
         public async Task<Lessor?> GetByIdAsync(int id)
         {
-            return await _context.Lessors.FindAsync(id);
+            return await _context.Lessors
+                .Include(l => l.Leases)
+                .FirstOrDefaultAsync(l => l.Id == id);
         }
 
         public Task<Lessor?> GetByLeaseId(int leaseId)

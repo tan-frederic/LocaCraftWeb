@@ -1,4 +1,5 @@
-﻿using LocaCraftAPI.Models;
+﻿using LocaCraftAPI.DTOs.Lease;
+using LocaCraftAPI.Models;
 using LocaCraftAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,55 +31,59 @@ namespace LocaCraftAPI.Controllers
         /// Returns all leases.
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Lease>>> GetAllLeases()
+        public async Task<ActionResult<IEnumerable<LeaseResponseDTO>>> GetAllLeases()
         {
             var leases = await _leaseRepository.GetAllAsync();
-            return Ok(leases);
+            var dtos = leases.Select(LeaseMapper.ToResponseDTO);
+            return Ok(dtos);
         }
 
         /// <summary>
         /// Returns a single lease by id.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Lease>> GetLeaseById(int id)
+        public async Task<ActionResult<LeaseResponseDTO>> GetLeaseById(int id)
         {
             var lease = await _leaseRepository.GetByIdAsync(id);
             if (lease == null)
                 return NotFound();
-            return Ok(lease);
+            return Ok(LeaseMapper.ToResponseDTO(lease));
         }
 
         [HttpGet("realestateasset/{realEstateAssetId}")]
-        public async Task<ActionResult<IEnumerable<Lease>>> GetLeasesByRealEstateAssetId(int realEstateAssetId)
+        public async Task<ActionResult<IEnumerable<LeaseResponseDTO>>> GetLeasesByRealEstateAssetId(int realEstateAssetId)
         {
             var leases = await _leaseRepository.GetByRealEstateAssetIdAsync(realEstateAssetId);
-            return Ok(leases);
+            var dtos = leases.Select(LeaseMapper.ToResponseDTO);
+            return Ok(dtos);
         }
 
         /// <summary>
         /// Creates a new lease.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<Lease>> CreateLease(Lease lease)
+        public async Task<ActionResult<LeaseResponseDTO>> CreateLease(LeaseCreateDTO dto)
         {
+            var lease = LeaseMapper.ToEntity(dto);
             await _leaseRepository.CreateAsync(lease);
-            return CreatedAtAction(nameof(GetLeaseById), new { id = lease.Id }, lease);
+
+            var responseDto = LeaseMapper.ToResponseDTO(lease);
+            return CreatedAtAction(nameof(GetLeaseById), new { id = responseDto.Id }, responseDto);
         }
 
         /// <summary>
         /// Updates an existing lease.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<ActionResult<Lease>> UpdateLease(int id, Lease lease)
+        public async Task<ActionResult<LeaseResponseDTO>> UpdateLease(int id, LeaseCreateDTO dto)
         {
-            // Ensure route id and payload id match to avoid unintended updates.
-            if (id != lease.Id)
-                return BadRequest();
             var existingLease = await _leaseRepository.GetByIdAsync(id);
             if (existingLease == null)
                 return NotFound();
-            await _leaseRepository.UpdateAsync(lease);
-            return Ok(lease);
+
+            LeaseMapper.ApplyUpdate(dto, existingLease);
+            await _leaseRepository.UpdateAsync(existingLease);
+            return Ok(LeaseMapper.ToResponseDTO(existingLease));
         }
 
         /// <summary>

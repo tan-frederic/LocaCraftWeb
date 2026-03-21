@@ -1,4 +1,4 @@
-using LocaCraftAPI.Models;
+using LocaCraftAPI.DTOs.RealEstateAsset;
 using LocaCraftAPI.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,52 +31,56 @@ namespace LocaCraftAPI.Controllers
         /// Returns all real estate assets belonging to the authenticated user.
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RealEstateAsset>>> GetAllRealEstateAsset()
+        public async Task<ActionResult<IEnumerable<RealEstateAssetResponseDTO>>> GetAllRealEstateAsset()
         {
             var userId = GetUserId();
-            if (userId == null) return Unauthorized();
+            if (userId == null)
+                return Unauthorized();
             var assets = await _realEstateAssetRepository.GetAllAsync(userId);
-            return Ok(assets);
+            var dtos = assets.Select(RealEstateAssetMapper.ToResponseDTO);
+            return Ok(dtos);
         }
 
         /// <summary>
         /// Returns a single asset by id.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<RealEstateAsset>> GetRealEstateAssetById(int id)
+        public async Task<ActionResult<RealEstateAssetResponseDTO>> GetRealEstateAssetById(int id)
         {
             var userId = GetUserId();
-            if (userId == null) return Unauthorized();
+            if (userId == null)
+                return Unauthorized();
             var asset = await _realEstateAssetRepository.GetByIdAsync(id);
             if (asset == null)
                 return NotFound();
             if (asset.UserId != userId)
                 return Forbid();
-            return Ok(asset);
+            return Ok(RealEstateAssetMapper.ToResponseDTO(asset));
         }
 
         /// <summary>
         /// Creates a new asset.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<RealEstateAsset>> CreateRealEstateAsset(RealEstateAsset asset)
+        public async Task<ActionResult<RealEstateAssetResponseDTO>> CreateRealEstateAsset(RealEstateAssetCreateDTO dto)
         {
             var userId = GetUserId();
-            if (userId == null) return Unauthorized();
+            if (userId == null) 
+               return Unauthorized();
+            var asset = RealEstateAssetMapper.ToEntity(dto);
             asset.UserId = userId;
             await _realEstateAssetRepository.CreateAsync(asset);
-            return CreatedAtAction(nameof(GetRealEstateAssetById), new { id = asset.Id }, asset);
+
+            var responseDto = RealEstateAssetMapper.ToResponseDTO(asset);
+            return CreatedAtAction(nameof(GetRealEstateAssetById), new { id = responseDto.Id }, responseDto);
         }
 
         /// <summary>
         /// Updates an existing asset.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<ActionResult<RealEstateAsset>> UpdateRealEstateAsset(int id, RealEstateAsset asset)
+        public async Task<ActionResult<RealEstateAssetResponseDTO>> UpdateRealEstateAsset(int id, RealEstateAssetCreateDTO dto)
         {
-            // Ensure route id and payload id match to avoid unintended updates.
-            if (id != asset.Id)
-                return BadRequest();
             var userId = GetUserId();
             if (userId == null) return Unauthorized();
             var existingAsset = await _realEstateAssetRepository.GetByIdAsync(id);
@@ -84,9 +88,10 @@ namespace LocaCraftAPI.Controllers
                 return NotFound();
             if (existingAsset.UserId != userId)
                 return Forbid();
-            asset.UserId = userId;
-            await _realEstateAssetRepository.UpdateAsync(asset);
-            return Ok(asset);
+            RealEstateAssetMapper.ApplyUpdate(dto, existingAsset);
+            existingAsset.UserId = userId;
+            await _realEstateAssetRepository.UpdateAsync(existingAsset);
+            return Ok(RealEstateAssetMapper.ToResponseDTO(existingAsset));
         }
 
         /// <summary>
@@ -96,7 +101,8 @@ namespace LocaCraftAPI.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             var userId = GetUserId();
-            if (userId == null) return Unauthorized();
+            if (userId == null)
+                return Unauthorized();
             var existingAsset = await _realEstateAssetRepository.GetByIdAsync(id);
             if (existingAsset == null)
                 return NotFound();
