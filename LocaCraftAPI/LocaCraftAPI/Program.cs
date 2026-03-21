@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
@@ -78,6 +79,14 @@ namespace LocaCraftAPI
 
             builder.Services.AddAuthorization();
 
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                // The container is not directly exposed; only nginx reaches it.
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+
             // Add OpenAPI/Swagger support
             // Learn more about configuring OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddOpenApi();
@@ -94,6 +103,8 @@ namespace LocaCraftAPI
                     roleManager.CreateAsync(new IdentityRole("User")).GetAwaiter().GetResult();
             }
 
+            app.UseForwardedHeaders();
+
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
@@ -102,6 +113,8 @@ namespace LocaCraftAPI
                     options.Title ="LocaCraft API Reference";
                     options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);                  
                 });
+                app.MapGet("/", () => Results.Redirect("/docs/v1"));
+                app.MapGet("/index.html", () => Results.Redirect("/docs/v1"));
             }
 
             app.UseCors(corsName);
@@ -111,8 +124,7 @@ namespace LocaCraftAPI
 
             app.MapControllers();
 
-            app.MapGet("/", () => Results.Redirect("/docs/v1"));
-            app.MapGet("/index.html", () => Results.Redirect("/docs/v1"));
+            
 
             RegisterUser.MapEndPoint(app);
             LoginUser.MapEndPoint(app);
