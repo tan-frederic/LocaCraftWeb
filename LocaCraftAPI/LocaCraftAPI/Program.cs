@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 using System.Text;
 
 namespace LocaCraftAPI
@@ -49,10 +51,6 @@ namespace LocaCraftAPI
             builder.Services.AddControllers();
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.CustomSchemaIds(type => type.FullName);
-            });
 
             builder.Services.AddIdentityCore<AppUser>()
                 .AddRoles<IdentityRole>()
@@ -81,6 +79,21 @@ namespace LocaCraftAPI
 
             builder.Services.AddAuthorization();
 
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                if (builder.Configuration.GetValue<bool>("TRUST_PROXY"))
+                {
+                    // Container is only reachable by nginx (not publicly exposed), so trust any proxy.
+                    options.KnownNetworks.Clear();
+                    options.KnownProxies.Clear();
+                }
+            });
+
+            // Add OpenAPI/Swagger support
+            // Learn more about configuring OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddOpenApi();
+
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
@@ -93,14 +106,18 @@ namespace LocaCraftAPI
                     roleManager.CreateAsync(new IdentityRole("User")).GetAwaiter().GetResult();
             }
 
+            app.UseForwardedHeaders();
+
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(config =>
+                app.MapOpenApi();
+                app.MapScalarApiReference("/docs", options =>
                 {
-                    config.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-                    config.RoutePrefix = string.Empty;
+                    options.Title ="LocaCraft API Reference";
+                    options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);                  
                 });
+                app.MapGet("/", () => Results.Redirect("/docs/v1")).ExcludeFromDescription();
+                app.MapGet("/index.html", () => Results.Redirect("/docs/v1")).ExcludeFromDescription();
             }
 
             app.UseCors(corsName);
@@ -109,6 +126,8 @@ namespace LocaCraftAPI
             app.UseAuthorization();
 
             app.MapControllers();
+
+            
 
             RegisterUser.MapEndPoint(app);
             LoginUser.MapEndPoint(app);
