@@ -1,4 +1,5 @@
-﻿using LocaCraftAPI.Models;
+﻿using LocaCraftAPI.DTOs.Tenant;
+using LocaCraftAPI.Models;
 using LocaCraftAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,64 +33,67 @@ namespace LocaCraftAPI.Controllers
         /// Returns all tenants.
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tenant>>> GetAllTenants()
+        public async Task<ActionResult<IEnumerable<TenantResponseDTO>>> GetAllTenants()
         {
             var tenants = await _tenantRepository.GetAllAsync();
-            return Ok(tenants);
+            var dtos = tenants.Select(TenantMapper.ToResponseDTO);
+            return Ok(dtos);
         }
 
         /// <summary>
         /// Returns a single tenant by id.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Tenant>> GetTenantById(int id)
+        public async Task<ActionResult<TenantResponseDTO>> GetTenantById(int id)
         {
             var tenant = await _tenantRepository.GetByIdAsync(id);
             if (tenant == null)
                 return NotFound();
-            return Ok(tenant);
+            return Ok(TenantMapper.ToResponseDTO(tenant));
         }
 
         [HttpGet("lease/{leaseId}")]
-        public async Task<ActionResult<Tenant>> GetTenantByLeaseId(int leaseId)
+        public async Task<ActionResult<TenantResponseDTO>> GetTenantByLeaseId(int leaseId)
         {
             var tenant = await _tenantRepository.GetByLeaseIdAsync(leaseId);
             if (tenant == null)
                 return NotFound();
-            return Ok(tenant);
+            return Ok(TenantMapper.ToResponseDTO(tenant));
         }
 
         [HttpGet("lease/{leaseId}/all")]
-        public async Task<ActionResult<IEnumerable<Tenant>>> GetTenantsByLeaseId(int leaseId)
+        public async Task<ActionResult<IEnumerable<TenantResponseDTO>>> GetTenantsByLeaseId(int leaseId)
         {
             var tenants = await _tenantRepository.GetAllByLeaseIdAsync(leaseId);
-            return Ok(tenants);
+            var dtos = tenants.Select(TenantMapper.ToResponseDTO);
+            return Ok(dtos);
         }
 
         /// <summary>
         /// Creates a new tenant.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<Tenant>> CreateTenant(Models.Tenant tenant)
+        public async Task<ActionResult<TenantResponseDTO>> CreateTenant(TenantCreateDTO dto)
         {
+            var tenant = TenantMapper.ToEntity(dto);
             await _tenantRepository.CreateAsync(tenant);
-            return CreatedAtAction(nameof(GetTenantById), new { id = tenant.Id }, tenant);
+
+            var responseDto = TenantMapper.ToResponseDTO(tenant);
+            return CreatedAtAction(nameof(GetTenantById), new { id = responseDto.Id }, responseDto);
         }
 
         /// <summary>
         /// Updates an existing tenant.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<ActionResult<Tenant>> UpdateTenant(int id, Tenant tenant)
+        public async Task<ActionResult<TenantResponseDTO>> UpdateTenant(int id, TenantCreateDTO tenant)
         {
-            // Ensure route id and payload id match to avoid unintended updates.
-            if (id != tenant.Id)
-                return BadRequest();
             var existingTenant = await _tenantRepository.GetByIdAsync(id);
             if (existingTenant == null)
                 return NotFound();
-            await _tenantRepository.UpdateAsync(tenant);
-            return Ok(tenant);
+            TenantMapper.ApplyUpdate(tenant, existingTenant);
+            await _tenantRepository.UpdateAsync(existingTenant);
+            return Ok(TenantMapper.ToResponseDTO(existingTenant));
         }
 
         /// <summary>
