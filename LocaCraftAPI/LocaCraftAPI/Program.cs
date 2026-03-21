@@ -82,9 +82,12 @@ namespace LocaCraftAPI
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-                // The container is not directly exposed; only nginx reaches it.
-                options.KnownNetworks.Clear();
-                options.KnownProxies.Clear();
+                if (!builder.Environment.IsDevelopment())
+                {
+                    // In production the container is only reachable by nginx, so trust any proxy.
+                    options.KnownNetworks.Clear();
+                    options.KnownProxies.Clear();
+                }
             });
 
             // Add OpenAPI/Swagger support
