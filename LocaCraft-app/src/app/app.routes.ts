@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { RealEstateListComponent } from './real-estate-list/real-estate-list.component';
 import { RealEstateFormComponent } from './real-estate-form/real-estate-form.component';
 import { RealEstateDetailsComponent } from './real-estate-details/real-estate-details.component';
@@ -11,7 +12,8 @@ import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
     {path: '', redirectTo: 'home', pathMatch: 'full'},
-    {path: 'home', component: RealEstateListComponent, canActivate: [authGuard]},
+    {path: 'home', component: DashboardComponent, canActivate: [authGuard]},
+    {path: 'properties', component: RealEstateListComponent, canActivate: [authGuard]},
     {path: 'create', component: RealEstateFormComponent, canActivate: [authGuard]},
     {path: 'details/:id', component: RealEstateDetailsComponent, canActivate: [authGuard]},
     {path: 'lease/create', component: LeaseFormComponent, canActivate: [authGuard]},
